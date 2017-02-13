@@ -7,9 +7,15 @@
 #include "MemorySpy.h"
 #include <boost/format.hpp>
 
+
+
+
+bool MemorySpy::initilized = false;
+LibCDelegator MemorySpy::raw_libc {};
+
 MemorySpy MemorySpy::_instance {};
 
-void *MemorySpy::malloc(const size_t size) {
+void *MemorySpy::spy_malloc(const size_t size) {
   std::cout<<"hello"<<std::endl;
   void *memory = libc.malloc(size);
   store_memory_malloc(size, memory);
@@ -17,19 +23,19 @@ void *MemorySpy::malloc(const size_t size) {
 }
 
 void MemorySpy::store_memory_malloc(const size_t size, const void *memory) {
-  if (n_entries < MAX_ENTRIES_POSSIBLE) {
-    entries[n_entries++] = std::move(MemoryEntry {memory, size});
-  }
+  initilized = false;
+  entries.emplace_back(memory, size);
+  initilized = true;
 }
 
-void MemorySpy::free(void *aptr) {
+void MemorySpy::spy_free(void *aptr) {
   std::cout<<"bye"<<std::endl;
   invalidate_entry(aptr);
   libc.free(aptr);
 }
 
 void MemorySpy::invalidate_entry(const void *aptr) {
-  if (aptr != nullptr) {
+  if (aptr != nullptr && initilized) {
     bool allocated = try_invalidate_entry(aptr);
     if (!allocated) {
       throw "memory was not allocated first";
@@ -39,7 +45,7 @@ void MemorySpy::invalidate_entry(const void *aptr) {
 
 bool MemorySpy::try_invalidate_entry(const void *aptr) {
   bool allocated{false};
-  for (int i = 0; i < n_entries; i++) {
+  for (int i = 0; i < entries.size(); i++) {
     if (entries[i].is_valid() && entries[i].points_to(aptr)) {
       entries[i].invalidate();
       allocated = true;
@@ -48,14 +54,14 @@ bool MemorySpy::try_invalidate_entry(const void *aptr) {
   return allocated;
 }
 
-void MemorySpy::clear_state() {
+void MemorySpy::spy_clear_state() {
   for (int i = 0; i < n_entries; i++) {
     entries[i] = std::move(MemoryEntry{});
   }
   n_entries = 0;
 }
 
-bool MemorySpy::verify() {
+bool MemorySpy::spy_verify() {
   int valid_elements = 0;
   for (int i = 0; i < n_entries; i++) {
     if (entries[i].is_valid()) {
@@ -67,6 +73,55 @@ bool MemorySpy::verify() {
 
 MemorySpy &MemorySpy::instance() {
   return _instance;
+}
+
+void *MemorySpy::malloc(const size_t size) {
+  if (readyForSpying()) {
+    return instance().spy_malloc(size);
+  } else {
+    return raw_malloc(size);
+  }
+}
+
+void MemorySpy::free(void *aptr) {
+  if (readyForSpying()) {
+    instance().spy_free(aptr);
+  } else {
+    raw_free(aptr);
+  }
+}
+
+bool MemorySpy::readyForSpying() {
+  return initilized;
+}
+bool MemorySpy::verify() {
+  if (readyForSpying()) {
+    return instance().spy_verify();
+  } else {
+    return true;
+  }
+}
+
+void MemorySpy::clear_state() {
+  if (readyForSpying()) {
+    instance();
+  }
+}
+
+void *MemorySpy::raw_malloc(const size_t size) {
+  return raw_libc.malloc(size);
+}
+
+void MemorySpy::raw_free(void *aptr) {
+  return raw_libc.free(aptr);
+}
+
+void MemorySpy::start_spying() {
+  initilized = true;
+}
+
+void MemorySpy::stop_spying() {
+  initilized = false;
 }
 
 //std::shared_ptr<MemorySpy> MemorySpy::create() {

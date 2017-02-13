@@ -11,13 +11,20 @@
 int main() {
   std::cout << "Hello, World!" << std::endl;
 
+  start_spying();
+
   int *p = new int {3};
   delete p;
 
   int *pt = new int[20];
   delete[] pt;
 
-  bool result = MemorySpy::instance().verify();
+  stop_spying();
+
+  bool result = verify();
   std::cout<<result<<std::endl;
+
+  clear_state();
+
   return 0;
 }

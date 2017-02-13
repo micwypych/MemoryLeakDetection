@@ -13,22 +13,36 @@
 
 class MemorySpy {
  public:
-  virtual void *malloc(const size_t size);
-  virtual void free(void *aptr);
-  virtual void clear_state();
-  virtual bool verify();
 
-  static MemorySpy &instance();
+  static void start_spying();
+  static void stop_spying();
+  static void clear_state();
+  static void *malloc(const size_t size);
+  static void free(void *aptr);
+  static bool verify();
+
 //  static std::shared_ptr<MemorySpy> create();
  protected:
+  static bool initilized;
+  static MemorySpy &instance();
   MemorySpy() : entries({}), n_entries(0) {}
+  static void *raw_malloc(const size_t size);
+  static bool readyForSpying();
+  static void raw_free(void *aptr);
+
+  virtual void *spy_malloc(const size_t size);
+  virtual void spy_free(void *aptr);
+  virtual void spy_clear_state();
+  virtual bool spy_verify();
+
 
  private:
   constexpr static size_t MAX_ENTRIES_POSSIBLE = 1024;
   static MemorySpy _instance;
   int n_entries;
   LibCDelegator libc;
-  std::array<MemoryEntry, MAX_ENTRIES_POSSIBLE> entries;
+  static LibCDelegator raw_libc;
+  std::vector<MemoryEntry> entries;
   void store_memory_malloc(const size_t size, const void *memory);
   void invalidate_entry(const void *aptr);
   bool try_invalidate_entry(const void *aptr);

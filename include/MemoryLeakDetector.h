@@ -7,7 +7,13 @@
 
 #include <cstddef>
 
+void start_spying();
+void stop_spying();
+void clear_state();
+
 void *malloc(size_t size);
 void free(void *aptr);
+
+bool verify();
 
 #endif //MEMORYLEAKDETECTION_MEMORYLEAKDETECTOR_H

@@ -5,10 +5,26 @@
 #include <cstddef>
 #include <MemorySpy.h>
 
+void start_spying() {
+  return MemorySpy::start_spying();
+}
+
+void stop_spying() {
+  return MemorySpy::stop_spying();
+}
+
+void clear_state() {
+  return MemorySpy::clear_state();
+}
+
 void *malloc(size_t size) {
-  return MemorySpy::instance().malloc(size);
+  return MemorySpy::malloc(size);
 }
 
 void free(void *aptr) {
-  return MemorySpy::instance().free(aptr);
+  return MemorySpy::free(aptr);
+}
+
+bool verify() {
+  return MemorySpy::verify();
 }
