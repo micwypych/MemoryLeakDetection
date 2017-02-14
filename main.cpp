@@ -17,12 +17,16 @@ int main() {
   delete p;
 
   int *pt = new int[20];
-  delete[] pt;
+//  delete[] pt;
 
   stop_spying();
 
-  bool result = verify();
-  std::cout<<result<<std::endl;
+  bool result = MemorySpy::verify();
+  std::cout<<(result?"true":"false")<<std::endl;
+
+  for (const auto & str : MemorySpy::issues()) {
+    std::cout << str << std::endl;
+  }
 
   clear_state();
 

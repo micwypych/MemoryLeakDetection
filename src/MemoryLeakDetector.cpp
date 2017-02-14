@@ -25,6 +25,3 @@ void free(void *aptr) {
   return MemorySpy::free(aptr);
 }
 
-bool verify() {
-  return MemorySpy::verify();
-}

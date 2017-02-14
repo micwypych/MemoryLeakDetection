@@ -7,35 +7,34 @@
 #include "MemorySpy.h"
 #include <boost/format.hpp>
 
+bool MemorySpy::initialized = false;
+LibCDelegator MemorySpy::raw_libc{};
 
-
-
-bool MemorySpy::initilized = false;
-LibCDelegator MemorySpy::raw_libc {};
-
-MemorySpy MemorySpy::_instance {};
+MemorySpy MemorySpy::_instance{};
 
 void *MemorySpy::spy_malloc(const size_t size) {
-  std::cout<<"hello"<<std::endl;
   void *memory = libc.malloc(size);
-  store_memory_malloc(size, memory);
+  if (not internal_allocation_on()) {
+    std::cout << "hello" << std::endl;
+    store_memory_malloc(size, memory);
+  }
   return memory;
 }
 
 void MemorySpy::store_memory_malloc(const size_t size, const void *memory) {
-  initilized = false;
   entries.emplace_back(memory, size);
-  initilized = true;
 }
 
 void MemorySpy::spy_free(void *aptr) {
-  std::cout<<"bye"<<std::endl;
-  invalidate_entry(aptr);
+  if (not internal_allocation_on()) {
+    std::cout << "bye" << std::endl;
+    invalidate_entry(aptr);
+  }
   libc.free(aptr);
 }
 
 void MemorySpy::invalidate_entry(const void *aptr) {
-  if (aptr != nullptr && initilized) {
+  if (aptr != nullptr) {
     bool allocated = try_invalidate_entry(aptr);
     if (!allocated) {
       throw "memory was not allocated first";
@@ -45,9 +44,9 @@ void MemorySpy::invalidate_entry(const void *aptr) {
 
 bool MemorySpy::try_invalidate_entry(const void *aptr) {
   bool allocated{false};
-  for (int i = 0; i < entries.size(); i++) {
-    if (entries[i].is_valid() && entries[i].points_to(aptr)) {
-      entries[i].invalidate();
+  for (auto &entry : entries) {
+    if (entry.is_valid() && entry.points_to(aptr)) {
+      entry.invalidate();
       allocated = true;
     }
   }
@@ -55,19 +54,18 @@ bool MemorySpy::try_invalidate_entry(const void *aptr) {
 }
 
 void MemorySpy::spy_clear_state() {
-  for (int i = 0; i < n_entries; i++) {
-    entries[i] = std::move(MemoryEntry{});
-  }
-  n_entries = 0;
+  entries.clear();
 }
 
 bool MemorySpy::spy_verify() {
   int valid_elements = 0;
-  for (int i = 0; i < n_entries; i++) {
-    if (entries[i].is_valid()) {
-      valid_elements++;
-    }
-  }
+  std::for_each(entries.begin(), entries.end(),
+                [&valid_elements]
+                    (auto &entry) {
+                  if (entry.is_valid()) {
+                    valid_elements++;
+                  }
+                });
   return valid_elements == 0;
 }
 
@@ -76,30 +74,29 @@ MemorySpy &MemorySpy::instance() {
 }
 
 void *MemorySpy::malloc(const size_t size) {
-  if (readyForSpying()) {
-    return instance().spy_malloc(size);
-  } else {
-    return raw_malloc(size);
-  }
+  return safe_internall_call<void *>([size](auto &inst) {
+                                       return inst.spy_malloc(size);
+                                     },
+                                     [size]() {
+                                       return raw_malloc(size);
+                                     });
 }
 
 void MemorySpy::free(void *aptr) {
-  if (readyForSpying()) {
-    instance().spy_free(aptr);
-  } else {
-    raw_free(aptr);
-  }
+  safe_internall_call([aptr](auto &inst) { inst.spy_free(aptr); }, [aptr]() { raw_free(aptr); });
 }
 
 bool MemorySpy::readyForSpying() {
-  return initilized;
+  return initialized;
 }
+
 bool MemorySpy::verify() {
-  if (readyForSpying()) {
-    return instance().spy_verify();
-  } else {
-    return true;
-  }
+  return safe_internall_call<bool>([](auto &inst) {
+                                     return inst.spy_verify();
+                                   },
+                                   []() {
+                                     return true;
+                                   });
 }
 
 void MemorySpy::clear_state() {
@@ -117,13 +114,72 @@ void MemorySpy::raw_free(void *aptr) {
 }
 
 void MemorySpy::start_spying() {
-  initilized = true;
+  initialized = true;
 }
 
 void MemorySpy::stop_spying() {
-  initilized = false;
+  initialized = false;
 }
 
-//std::shared_ptr<MemorySpy> MemorySpy::create() {
-//  return std::shared_ptr<MemorySpy> {new MemorySpy(std::make_unique<LibCDelegator>())};
-//}
+std::vector<std::string> MemorySpy::issues() {
+  return safe_internall_call<std::vector<std::string>>([](auto &inst) {
+                                                         return inst.spy_issues();
+                                                       },
+                                                       []() {
+                                                         return std::vector<std::string>();
+                                                       });
+}
+std::vector<std::string> MemorySpy::spy_issues() {
+  std::vector<std::string> result;
+  std::vector<MemoryEntry> temp;
+  std::remove_copy_if(entries.begin(),
+                      entries.end(),
+                      std::back_inserter(temp),
+                      [](const auto &entry) {
+                        return not entry.is_valid();
+                      });
+  std::transform(temp.begin(),
+                 temp.end(),
+                 std::back_inserter(result),
+                 [](const auto &entry) {
+                   return entry.message();
+                 });
+  return result;
+}
+
+void MemorySpy::internal_allocation_start() {
+  internal_allocation_state.push_start();
+}
+
+void MemorySpy::internal_allocation_stop() {
+  internal_allocation_state.pop_stop();
+}
+
+template<typename T, typename Operation, typename DefualtOperation>
+T MemorySpy::safe_internall_call(Operation op, DefualtOperation defaultResult) {
+
+  if (readyForSpying()) {
+    instance().internal_allocation_start();
+    auto result = op(instance());
+    instance().internal_allocation_stop();
+    return result;
+  } else {
+    return defaultResult();
+  }
+}
+
+bool MemorySpy::internal_allocation_on() {
+  return internal_allocation_state.state();
+}
+
+template<typename Operation, typename DefualtOperation>
+void MemorySpy::safe_internall_call(Operation op, DefualtOperation defaultResult) {
+
+  if (readyForSpying()) {
+    instance().internal_allocation_start();
+    op(instance());
+    instance().internal_allocation_stop();
+  } else {
+    defaultResult();
+  }
+}
