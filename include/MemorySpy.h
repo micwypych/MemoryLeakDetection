@@ -44,7 +44,7 @@ class MemorySpy {
   template<typename T, typename Operation, typename DefualtOperation>
   static T safe_internall_call(Operation mainOperation,DefualtOperation defualtOperation);
   template<typename Operation, typename DefualtOperation>
-  static void safe_internall_call(Operation op, DefualtOperation defaultResult);
+  static void safe_internall_proc(Operation op, DefualtOperation defaultResult);
 
 
  private:

@@ -83,7 +83,7 @@ void *MemorySpy::malloc(const size_t size) {
 }
 
 void MemorySpy::free(void *aptr) {
-  safe_internall_call([aptr](auto &inst) { inst.spy_free(aptr); }, [aptr]() { raw_free(aptr); });
+  safe_internall_proc([aptr](auto &inst) { inst.spy_free(aptr); }, [aptr]() { raw_free(aptr); });
 }
 
 bool MemorySpy::readyForSpying() {
@@ -168,12 +168,13 @@ T MemorySpy::safe_internall_call(Operation op, DefualtOperation defaultResult) {
   }
 }
 
+//TODO and not recording suspended
 bool MemorySpy::internal_allocation_on() {
   return internal_allocation_state.state();
 }
 
 template<typename Operation, typename DefualtOperation>
-void MemorySpy::safe_internall_call(Operation op, DefualtOperation defaultResult) {
+void MemorySpy::safe_internall_proc(Operation op, DefualtOperation defaultResult) {
 
   if (readyForSpying()) {
     instance().internal_allocation_start();
