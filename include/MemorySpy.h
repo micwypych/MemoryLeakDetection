@@ -15,17 +15,21 @@
 class MemorySpy {
  public:
 
+  static void initialize();
   static void start_spying();
   static void stop_spying();
   static void clear_state();
+
   static void *malloc(const size_t size);
   static void free(void *aptr);
+
   static bool verify();
   static std::vector<std::string> issues();
 
 //  static std::shared_ptr<MemorySpy> create();
  protected:
   static bool initialized;
+  static bool spying;
   static MemorySpy &instance();
   MemorySpy() : entries({}), n_entries(0) {}
   static void *raw_malloc(const size_t size);

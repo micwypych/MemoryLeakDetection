@@ -8,6 +8,7 @@
 #include <boost/format.hpp>
 
 bool MemorySpy::initialized = false;
+bool MemorySpy::spying = false;
 LibCDelegator MemorySpy::raw_libc{};
 
 MemorySpy MemorySpy::_instance{};
@@ -74,16 +75,23 @@ MemorySpy &MemorySpy::instance() {
 }
 
 void *MemorySpy::malloc(const size_t size) {
-  return safe_internall_call<void *>([size](auto &inst) {
-                                       return inst.spy_malloc(size);
-                                     },
-                                     [size]() {
-                                       return raw_malloc(size);
-                                     });
+  return safe_internall_call<void *>(
+      [size](auto &inst) {
+        return inst.spy_malloc(size);
+      },
+      [size]() {
+        return raw_malloc(size);
+      });
 }
 
 void MemorySpy::free(void *aptr) {
-  safe_internall_proc([aptr](auto &inst) { inst.spy_free(aptr); }, [aptr]() { raw_free(aptr); });
+  safe_internall_proc(
+      [aptr](auto &inst) {
+        inst.spy_free(aptr);
+      },
+      [aptr]() {
+        raw_free(aptr);
+      });
 }
 
 bool MemorySpy::readyForSpying() {
@@ -91,18 +99,21 @@ bool MemorySpy::readyForSpying() {
 }
 
 bool MemorySpy::verify() {
-  return safe_internall_call<bool>([](auto &inst) {
-                                     return inst.spy_verify();
-                                   },
-                                   []() {
-                                     return true;
-                                   });
+  return safe_internall_call<bool>(
+      [](auto &inst) {
+        return inst.spy_verify();
+      },
+      []() {
+        return true;
+      });
 }
 
 void MemorySpy::clear_state() {
   if (readyForSpying()) {
     instance();
+
   }
+  initialized = false;
 }
 
 void *MemorySpy::raw_malloc(const size_t size) {
@@ -115,35 +126,39 @@ void MemorySpy::raw_free(void *aptr) {
 
 void MemorySpy::start_spying() {
   initialized = true;
+  spying = true;
 }
 
 void MemorySpy::stop_spying() {
-  initialized = false;
+  spying = false;
 }
 
 std::vector<std::string> MemorySpy::issues() {
-  return safe_internall_call<std::vector<std::string>>([](auto &inst) {
-                                                         return inst.spy_issues();
-                                                       },
-                                                       []() {
-                                                         return std::vector<std::string>();
-                                                       });
+  return safe_internall_call<std::vector<std::string>>(
+      [](auto &inst) {
+        return inst.spy_issues();
+      },
+      []() {
+        return std::vector<std::string>();
+      });
 }
 std::vector<std::string> MemorySpy::spy_issues() {
   std::vector<std::string> result;
   std::vector<MemoryEntry> temp;
-  std::remove_copy_if(entries.begin(),
-                      entries.end(),
-                      std::back_inserter(temp),
-                      [](const auto &entry) {
-                        return not entry.is_valid();
-                      });
-  std::transform(temp.begin(),
-                 temp.end(),
-                 std::back_inserter(result),
-                 [](const auto &entry) {
-                   return entry.message();
-                 });
+  std::remove_copy_if(
+      begin(entries),
+      end(entries),
+      std::back_inserter(temp),
+      [](const auto &entry) {
+        return not entry.is_valid();
+      });;
+  std::transform(
+      begin(temp),
+      end(temp),
+      std::back_inserter(result),
+      [](const auto &entry) {
+        return entry.message("memory allocated at {PTR} of size {SIZE} was not properly freed");
+      });
   return result;
 }
 
@@ -157,7 +172,7 @@ void MemorySpy::internal_allocation_stop() {
 
 template<typename T, typename Operation, typename DefualtOperation>
 T MemorySpy::safe_internall_call(Operation op, DefualtOperation defaultResult) {
-
+  //TODO does not work with void* static_assert(std::is_void<T>::value,"cannot use call with void return type instead use safe_internal_proc");
   if (readyForSpying()) {
     instance().internal_allocation_start();
     auto result = op(instance());
@@ -170,7 +185,7 @@ T MemorySpy::safe_internall_call(Operation op, DefualtOperation defaultResult) {
 
 //TODO and not recording suspended
 bool MemorySpy::internal_allocation_on() {
-  return internal_allocation_state.state();
+  return internal_allocation_state.state() or not spying;
 }
 
 template<typename Operation, typename DefualtOperation>
@@ -183,4 +198,8 @@ void MemorySpy::safe_internall_proc(Operation op, DefualtOperation defaultResult
   } else {
     defaultResult();
   }
+}
+
+void MemorySpy::initialize() {
+  initialized = true;
 }

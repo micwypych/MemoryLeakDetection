@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <MemorySpy.h>
+#include <iterator>
 
 #include "MemoryLeakDetector.h"
 
@@ -24,9 +25,11 @@ int main() {
   bool result = MemorySpy::verify();
   std::cout<<(result?"true":"false")<<std::endl;
 
-  for (const auto & str : MemorySpy::issues()) {
-    std::cout << str << std::endl;
-  }
+  auto issues = MemorySpy::issues();
+  std::copy(begin(issues), end(issues), std::ostream_iterator<std::string>(std::cout, "\n"));
+//  for (const auto & str : MemorySpy::issues()) {
+//    std::cout << str << std::endl;
+//  }
 
   clear_state();
 

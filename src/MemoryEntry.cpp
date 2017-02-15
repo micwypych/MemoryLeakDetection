@@ -2,7 +2,8 @@
 // Created by mwypych on 07.02.17.
 //
 
-#include <sstream>
+#include <string>
+#include <regex>
 #include "MemoryEntry.h"
 
 MemoryEntry::MemoryEntry(const void *memory_ptr, const size_t memory_size)
@@ -24,14 +25,17 @@ void MemoryEntry::invalidate() {
   validity = false;
 }
 
-std::string MemoryEntry::message() const {
+std::string MemoryEntry::message(std::string pattern) const {
   if (is_valid()) {
-    std::stringstream ss;
-    ss << "memory allocated at ";
-    ss << memory_ptr;
-    ss << " of size ";
-    ss << memory_size;
-    return ss.str();
+    std::string tmp = std::regex_replace(pattern, std::regex {R"(\{PTR\})"}, to_string(memory_ptr));
+    std::string result = std::regex_replace(tmp, std::regex {R"(\{SIZE\})"}, to_string(memory_size));
+    return result;
+//    std::stringstream ss;
+//    ss << "memory allocated at ";
+//    ss << memory_ptr;
+//    ss << " of size ";
+//    ss << memory_size;
+//    return ss.str();
   } else {
     return "";
   }
@@ -42,4 +46,14 @@ MemoryEntry MemoryEntry::operator=(const MemoryEntry &entry) const {
   } else {
     return {};
   }
+}
+
+std::string MemoryEntry::to_string(const void *address) {
+  std::stringstream ss;
+  ss << address;
+  return ss.str();
+}
+
+std::string MemoryEntry::to_string(size_t size) {
+  return std::to_string(size);
 }
