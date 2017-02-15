@@ -103,16 +103,17 @@ bool MemorySpy::verify() {
       [](auto &inst) {
         return inst.spy_verify();
       },
-      []() {
+      [] {
         return true;
       });
 }
 
 void MemorySpy::clear_state() {
-  if (readyForSpying()) {
-    instance();
-
-  }
+  safe_internall_proc(
+      [](auto &inst) {
+        inst.spy_clear_state();
+      },
+      [] {});
   initialized = false;
 }
 

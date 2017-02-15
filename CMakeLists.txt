@@ -3,8 +3,15 @@ project(memoryleakdetection)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp include/LibC.h src/LibCDelegator.cpp include/LibCDelegator.h src/MemorySpy.cpp include/MemorySpy.h src/MemoryEntry.cpp include/MemoryEntry.h include/MemoryLeakDetector.h src/MemoryLeakDetector.cpp src/AllocationStack.cpp include/AllocationStack.h)
-add_executable(memoryleakdetection ${SOURCE_FILES})
+set(DETECTOR_SOURCE_FILES include/LibC.h src/LibCDelegator.cpp include/LibCDelegator.h src/MemorySpy.cpp include/MemorySpy.h src/MemoryEntry.cpp include/MemoryEntry.h include/MemoryLeakDetector.h src/MemoryLeakDetector.cpp src/AllocationStack.cpp include/AllocationStack.h)
+add_library(memoryleakdetection ${DETECTOR_SOURCE_FILES})
+target_link_libraries(memoryleakdetection dl)
+target_include_directories(memoryleakdetection PUBLIC include)
+
+add_executable(memoryleakdetection_main main.cpp)
 
 include_directories(include)
-target_link_libraries(memoryleakdetection dl)
+
+
+add_subdirectory(lib/gtest-1.8.0)
+add_subdirectory(tests)
