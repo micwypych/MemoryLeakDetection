@@ -191,35 +191,30 @@ using testing::MatchesRegex;
 class Interface {
  public:
   virtual ~Interface() {}
-  virtual void VoidFromString(char *str) = 0;
-  virtual char *StringFromString(char *str) = 0;
-  virtual int IntFromString(char *str) = 0;
-  virtual int &IntRefFromString(char *str) = 0;
-  virtual void VoidFromFunc(void(*func)(char *str)) = 0;
-  virtual void VoidFromIntRef(int &n) = 0;  // NOLINT
+  virtual void VoidFromString(char* str) = 0;
+  virtual char* StringFromString(char* str) = 0;
+  virtual int IntFromString(char* str) = 0;
+  virtual int& IntRefFromString(char* str) = 0;
+  virtual void VoidFromFunc(void(*func)(char* str)) = 0;
+  virtual void VoidFromIntRef(int& n) = 0;  // NOLINT
   virtual void VoidFromFloat(float n) = 0;
   virtual void VoidFromDouble(double n) = 0;
-  virtual void VoidFromVector(const std::vector<int> &v) = 0;
+  virtual void VoidFromVector(const std::vector<int>& v) = 0;
 };
 
-class Mock : public Interface {
+class Mock: public Interface {
  public:
   Mock() {}
 
-  MOCK_METHOD1(VoidFromString, void(char * str));
-  MOCK_METHOD1(StringFromString, char*(
-      char *str));
-  MOCK_METHOD1(IntFromString, int(char * str));
-  MOCK_METHOD1(IntRefFromString, int & (char * str));
-  MOCK_METHOD1(VoidFromFunc, void(void(*func)
-      (char * str)));
-  MOCK_METHOD1(VoidFromIntRef, void(int & n));  // NOLINT
-  MOCK_METHOD1(VoidFromFloat, void(float
-      n));
-  MOCK_METHOD1(VoidFromDouble, void(double
-      n));
-  MOCK_METHOD1(VoidFromVector, void(
-      const std::vector<int> &v));
+  MOCK_METHOD1(VoidFromString, void(char* str));
+  MOCK_METHOD1(StringFromString, char*(char* str));
+  MOCK_METHOD1(IntFromString, int(char* str));
+  MOCK_METHOD1(IntRefFromString, int&(char* str));
+  MOCK_METHOD1(VoidFromFunc, void(void(*func)(char* str)));
+  MOCK_METHOD1(VoidFromIntRef, void(int& n));  // NOLINT
+  MOCK_METHOD1(VoidFromFloat, void(float n));
+  MOCK_METHOD1(VoidFromDouble, void(double n));
+  MOCK_METHOD1(VoidFromVector, void(const std::vector<int>& v));
 
  private:
   GTEST_DISALLOW_COPY_AND_ASSIGN_(Mock);
@@ -229,10 +224,10 @@ class InvokeHelper {
  public:
   static void StaticVoidFromVoid() {}
   void VoidFromVoid() {}
-  static void StaticVoidFromString(char * /* str */) {}
-  void VoidFromString(char * /* str */) {}
-  static int StaticIntFromString(char * /* str */) { return 1; }
-  static bool StaticBoolFromString(const char * /* str */) { return true; }
+  static void StaticVoidFromString(char* /* str */) {}
+  void VoidFromString(char* /* str */) {}
+  static int StaticIntFromString(char* /* str */) { return 1; }
+  static bool StaticBoolFromString(const char* /* str */) { return true; }
 };
 
 class FieldHelper {
@@ -240,7 +235,7 @@ class FieldHelper {
   explicit FieldHelper(int a_field) : field_(a_field) {}
   int field() const { return field_; }
   int field_;  // NOLINT -- need external access to field_ to test
-  //           the Field matcher.
+               //           the Field matcher.
 };
 
 // Tests the linkage of the ReturnVoid action.
@@ -483,16 +478,16 @@ TEST(LinkTest, TestMatcherAnything) {
 TEST(LinkTest, TestMatcherA) {
   Mock mock;
 
-  ON_CALL(mock, VoidFromString(A<char *>())).WillByDefault(Return());
+  ON_CALL(mock, VoidFromString(A<char*>())).WillByDefault(Return());
 }
 
 // Tests the linkage of the Eq and the "bare value" matcher.
 TEST(LinkTest, TestMatchersEq) {
   Mock mock;
-  const char *p = "x";
+  const char* p = "x";
 
   ON_CALL(mock, VoidFromString(Eq(p))).WillByDefault(Return());
-  ON_CALL(mock, VoidFromString(const_cast<char *>("y")))
+  ON_CALL(mock, VoidFromString(const_cast<char*>("y")))
       .WillByDefault(Return());
 }
 
@@ -534,7 +529,7 @@ TEST(LinkTest, TestMatcherTypedEq) {
   Mock mock;
   long a = 0;
 
-  ON_CALL(mock, VoidFromIntRef(TypedEq<int &>(a))).WillByDefault(Return());
+  ON_CALL(mock, VoidFromIntRef(TypedEq<int&>(a))).WillByDefault(Return());
 }
 
 // Tests the linkage of the FloatEq, DoubleEq, NanSensitiveFloatEq and
@@ -592,7 +587,7 @@ TEST(LinkTest, TestMatcherElementsAre) {
 // Tests the linkage of the ElementsAreArray matcher.
 TEST(LinkTest, TestMatcherElementsAreArray) {
   Mock mock;
-  char arr[] = {'a', 'b'};
+  char arr[] = { 'a', 'b' };
 
   ON_CALL(mock, VoidFromVector(ElementsAreArray(arr))).WillByDefault(Return());
 }
@@ -609,10 +604,10 @@ TEST(LinkTest, TestMatcherContainerEq) {
 TEST(LinkTest, TestMatcherField) {
   FieldHelper helper(0);
 
-  Matcher<const FieldHelper &> m = Field(&FieldHelper::field_, Eq(0));
+  Matcher<const FieldHelper&> m = Field(&FieldHelper::field_, Eq(0));
   EXPECT_TRUE(m.Matches(helper));
 
-  Matcher<const FieldHelper *> m2 = Field(&FieldHelper::field_, Eq(0));
+  Matcher<const FieldHelper*> m2 = Field(&FieldHelper::field_, Eq(0));
   EXPECT_TRUE(m2.Matches(&helper));
 }
 
@@ -620,16 +615,16 @@ TEST(LinkTest, TestMatcherField) {
 TEST(LinkTest, TestMatcherProperty) {
   FieldHelper helper(0);
 
-  Matcher<const FieldHelper &> m = Property(&FieldHelper::field, Eq(0));
+  Matcher<const FieldHelper&> m = Property(&FieldHelper::field, Eq(0));
   EXPECT_TRUE(m.Matches(helper));
 
-  Matcher<const FieldHelper *> m2 = Property(&FieldHelper::field, Eq(0));
+  Matcher<const FieldHelper*> m2 = Property(&FieldHelper::field, Eq(0));
   EXPECT_TRUE(m2.Matches(&helper));
 }
 
 // Tests the linkage of the ResultOf matcher.
 TEST(LinkTest, TestMatcherResultOf) {
-  Matcher<char *> m = ResultOf(&InvokeHelper::StaticIntFromString, Eq(1));
+  Matcher<char*> m = ResultOf(&InvokeHelper::StaticIntFromString, Eq(1));
   EXPECT_TRUE(m.Matches(NULL));
 }
 
@@ -637,13 +632,13 @@ TEST(LinkTest, TestMatcherResultOf) {
 TEST(LinkTest, TestMatcherPointee) {
   int n = 1;
 
-  Matcher<int *> m = Pointee(Eq(1));
+  Matcher<int*> m = Pointee(Eq(1));
   EXPECT_TRUE(m.Matches(&n));
 }
 
 // Tests the linkage of the Truly matcher.
 TEST(LinkTest, TestMatcherTruly) {
-  Matcher<const char *> m = Truly(&InvokeHelper::StaticBoolFromString);
+  Matcher<const char*> m = Truly(&InvokeHelper::StaticBoolFromString);
   EXPECT_TRUE(m.Matches(NULL));
 }
 
@@ -667,7 +662,7 @@ TEST(LinkTest, TestMatcherNot) {
 
 // Tests the linkage of the MatcherCast<T>() function.
 TEST(LinkTest, TestMatcherCast) {
-  Matcher<const char *> m = MatcherCast<const char *>(_);
+  Matcher<const char*> m = MatcherCast<const char*>(_);
   EXPECT_TRUE(m.Matches(NULL));
 }
 

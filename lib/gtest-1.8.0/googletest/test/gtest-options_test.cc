@@ -60,7 +60,7 @@ namespace internal {
 namespace {
 
 // Turns the given relative path into an absolute path.
-FilePath GetAbsolutePathOf(const FilePath &relative_path) {
+FilePath GetAbsolutePathOf(const FilePath& relative_path) {
   return FilePath::ConcatPaths(FilePath::GetCurrentDir(), relative_path);
 }
 
@@ -93,8 +93,8 @@ TEST(XmlOutputTest, GetOutputFileFromDirectoryPath) {
   const std::string expected_output_file =
       GetAbsolutePathOf(
           FilePath(std::string("path") + GTEST_PATH_SEP_ +
-              GetCurrentExecutableName().string() + ".xml")).string();
-  const std::string &output_file =
+                   GetCurrentExecutableName().string() + ".xml")).string();
+  const std::string& output_file =
       UnitTestOptions::GetAbsolutePathToOutputFile();
 #if GTEST_OS_WINDOWS
   EXPECT_STRCASEEQ(expected_output_file.c_str(), output_file.c_str());
@@ -116,9 +116,9 @@ TEST(OutputFileHelpersTest, GetCurrentExecutableName) {
   //   Chandler Carruth's libtool replacement is ready.
   const bool success =
       exe_str == "gtest-options_test" ||
-          exe_str == "gtest_all_test" ||
-          exe_str == "lt-gtest_all_test" ||
-          exe_str == "gtest_dll_test";
+      exe_str == "gtest_all_test" ||
+      exe_str == "lt-gtest_all_test" ||
+      exe_str == "gtest_dll_test";
 #endif  // GTEST_OS_WINDOWS
   if (!success)
     FAIL() << "GetCurrentExecutableName() returns " << exe_str;
@@ -168,8 +168,8 @@ TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithRelativePath) {
       FilePath::ConcatPaths(
           original_working_dir_,
           FilePath(std::string("path") + GTEST_PATH_SEP_ +
-              GetCurrentExecutableName().string() + ".xml")).string();
-  const std::string &output_file =
+                   GetCurrentExecutableName().string() + ".xml")).string();
+  const std::string& output_file =
       UnitTestOptions::GetAbsolutePathToOutputFile();
 #if GTEST_OS_WINDOWS
   EXPECT_STRCASEEQ(expected_output_file.c_str(), output_file.c_str());
@@ -184,7 +184,7 @@ TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithAbsoluteFile) {
   EXPECT_EQ(FilePath("c:\\tmp\\filename.abc").string(),
             UnitTestOptions::GetAbsolutePathToOutputFile());
 #else
-  GTEST_FLAG(output) = "xml:/tmp/filename.abc";
+  GTEST_FLAG(output) ="xml:/tmp/filename.abc";
   EXPECT_EQ(FilePath("/tmp/filename.abc").string(),
             UnitTestOptions::GetAbsolutePathToOutputFile());
 #endif
@@ -200,7 +200,7 @@ TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithAbsolutePath) {
   GTEST_FLAG(output) = "xml:" + path;
   const std::string expected_output_file =
       path + GetCurrentExecutableName().string() + ".xml";
-  const std::string &output_file =
+  const std::string& output_file =
       UnitTestOptions::GetAbsolutePathToOutputFile();
 
 #if GTEST_OS_WINDOWS

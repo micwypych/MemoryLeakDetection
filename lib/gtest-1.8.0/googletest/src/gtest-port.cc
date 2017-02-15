@@ -92,8 +92,8 @@ const int kStdErrFileno = STDERR_FILENO;
 #if GTEST_OS_LINUX
 
 namespace {
-template<typename T>
-T ReadProcFileField(const string &filename, int field) {
+template <typename T>
+T ReadProcFileField(const string& filename, int field) {
   std::string dummy;
   std::ifstream file(filename.c_str());
   while (field-- > 0) {
@@ -570,11 +570,11 @@ RE::~RE() {
     regfree(&partial_regex_);
     regfree(&full_regex_);
   }
-  free(const_cast<char *>(pattern_));
+  free(const_cast<char*>(pattern_));
 }
 
 // Returns true iff regular expression re matches the entire str.
-bool RE::FullMatch(const char *str, const RE &re) {
+bool RE::FullMatch(const char* str, const RE& re) {
   if (!re.is_valid_) return false;
 
   regmatch_t match;
@@ -583,7 +583,7 @@ bool RE::FullMatch(const char *str, const RE &re) {
 
 // Returns true iff regular expression re matches a substring of str
 // (including str itself).
-bool RE::PartialMatch(const char *str, const RE &re) {
+bool RE::PartialMatch(const char* str, const RE& re) {
   if (!re.is_valid_) return false;
 
   regmatch_t match;
@@ -591,13 +591,13 @@ bool RE::PartialMatch(const char *str, const RE &re) {
 }
 
 // Initializes an RE from its string representation.
-void RE::Init(const char *regex) {
+void RE::Init(const char* regex) {
   pattern_ = posix::StrDup(regex);
 
   // Reserves enough bytes to hold the regular expression used for a
   // full match.
   const size_t full_regex_len = strlen(regex) + 10;
-  char *const full_pattern = new char[full_regex_len];
+  char* const full_pattern = new char[full_regex_len];
 
   snprintf(full_pattern, full_regex_len, "^(%s)$", regex);
   is_valid_ = regcomp(&full_regex_, full_pattern, REG_EXTENDED) == 0;
@@ -610,12 +610,12 @@ void RE::Init(const char *regex) {
   // versions of Cygwin) doesn't accept the empty string as a valid
   // regex.  We change it to an equivalent form "()" to be safe.
   if (is_valid_) {
-    const char *const partial_regex = (*regex == '\0') ? "()" : regex;
+    const char* const partial_regex = (*regex == '\0') ? "()" : regex;
     is_valid_ = regcomp(&partial_regex_, partial_regex, REG_EXTENDED) == 0;
   }
   EXPECT_TRUE(is_valid_)
-            << "Regular expression \"" << regex
-            << "\" is not a valid POSIX Extended regular expression.";
+      << "Regular expression \"" << regex
+      << "\" is not a valid POSIX Extended regular expression.";
 
   delete[] full_pattern;
 }
@@ -877,7 +877,7 @@ const char kUnknownFile[] = "unknown file";
 
 // Formats a source file path and a line number as they would appear
 // in an error message from the compiler used to compile this code.
-GTEST_API_ ::std::string FormatFileLocation(const char *file, int line) {
+GTEST_API_ ::std::string FormatFileLocation(const char* file, int line) {
   const std::string file_name(file == NULL ? kUnknownFile : file);
 
   if (line < 0) {
@@ -896,7 +896,7 @@ GTEST_API_ ::std::string FormatFileLocation(const char *file, int line) {
 // Note that FormatCompilerIndependentFileLocation() does NOT append colon
 // to the file location it produces, unlike FormatFileLocation().
 GTEST_API_ ::std::string FormatCompilerIndependentFileLocation(
-    const char *file, int line) {
+    const char* file, int line) {
   const std::string file_name(file == NULL ? kUnknownFile : file);
 
   if (line < 0)
@@ -905,12 +905,12 @@ GTEST_API_ ::std::string FormatCompilerIndependentFileLocation(
     return file_name + ":" + StreamableToString(line);
 }
 
-GTestLog::GTestLog(GTestLogSeverity severity, const char *file, int line)
+GTestLog::GTestLog(GTestLogSeverity severity, const char* file, int line)
     : severity_(severity) {
-  const char *const marker =
-      severity == GTEST_INFO ? "[  INFO ]" :
+  const char* const marker =
+      severity == GTEST_INFO ?    "[  INFO ]" :
       severity == GTEST_WARNING ? "[WARNING]" :
-      severity == GTEST_ERROR ? "[ ERROR ]" : "[ FATAL ]";
+      severity == GTEST_ERROR ?   "[ ERROR ]" : "[ FATAL ]";
   GetStream() << ::std::endl << marker << " "
               << FormatFileLocation(file, line).c_str() << ": ";
 }
@@ -994,7 +994,7 @@ class CapturedStream {
       uncaptured_fd_ = -1;
     }
 
-    FILE *const file = posix::FOpen(filename_.c_str(), "r");
+    FILE* const file = posix::FOpen(filename_.c_str(), "r");
     const std::string content = ReadEntireFile(file);
     posix::FClose(file);
     return content;
@@ -1011,11 +1011,11 @@ class CapturedStream {
 
 GTEST_DISABLE_MSC_WARNINGS_POP_()
 
-static CapturedStream *g_captured_stderr = NULL;
-static CapturedStream *g_captured_stdout = NULL;
+static CapturedStream* g_captured_stderr = NULL;
+static CapturedStream* g_captured_stdout = NULL;
 
 // Starts capturing an output stream (stdout/stderr).
-void CaptureStream(int fd, const char *stream_name, CapturedStream **stream) {
+void CaptureStream(int fd, const char* stream_name, CapturedStream** stream) {
   if (*stream != NULL) {
     GTEST_LOG_(FATAL) << "Only one " << stream_name
                       << " capturer can exist at a time.";
@@ -1024,7 +1024,7 @@ void CaptureStream(int fd, const char *stream_name, CapturedStream **stream) {
 }
 
 // Stops capturing the output stream and returns the captured string.
-std::string GetCapturedStream(CapturedStream **captured_stream) {
+std::string GetCapturedStream(CapturedStream** captured_stream) {
   const std::string content = (*captured_stream)->GetCapturedString();
 
   delete *captured_stream;
@@ -1073,14 +1073,14 @@ std::string TempDir() {
 #endif  // GTEST_OS_WINDOWS_MOBILE
 }
 
-size_t GetFileSize(FILE *file) {
+size_t GetFileSize(FILE* file) {
   fseek(file, 0, SEEK_END);
   return static_cast<size_t>(ftell(file));
 }
 
-std::string ReadEntireFile(FILE *file) {
+std::string ReadEntireFile(FILE* file) {
   const size_t file_size = GetFileSize(file);
-  char *const buffer = new char[file_size];
+  char* const buffer = new char[file_size];
 
   size_t bytes_last_read = 0;  // # of bytes read in the last fread()
   size_t bytes_read = 0;       // # of bytes read so far
@@ -1090,7 +1090,7 @@ std::string ReadEntireFile(FILE *file) {
   // Keeps reading the file until we cannot read further or the
   // pre-determined file size is reached.
   do {
-    bytes_last_read = fread(buffer + bytes_read, 1, file_size - bytes_read, file);
+    bytes_last_read = fread(buffer+bytes_read, 1, file_size-bytes_read, file);
     bytes_read += bytes_last_read;
   } while (bytes_last_read > 0 && bytes_read < file_size);
 
@@ -1102,16 +1102,16 @@ std::string ReadEntireFile(FILE *file) {
 
 #if GTEST_HAS_DEATH_TEST
 
-static const ::std::vector<testing::internal::string> *g_injected_test_argvs =
-    NULL;  // Owned.
+static const ::std::vector<testing::internal::string>* g_injected_test_argvs =
+                                        NULL;  // Owned.
 
-void SetInjectableArgvs(const ::std::vector<testing::internal::string> *argvs) {
+void SetInjectableArgvs(const ::std::vector<testing::internal::string>* argvs) {
   if (g_injected_test_argvs != argvs)
     delete g_injected_test_argvs;
   g_injected_test_argvs = argvs;
 }
 
-const ::std::vector<testing::internal::string> &GetInjectableArgvs() {
+const ::std::vector<testing::internal::string>& GetInjectableArgvs() {
   if (g_injected_test_argvs != NULL) {
     return *g_injected_test_argvs;
   }
@@ -1131,7 +1131,7 @@ void Abort() {
 // Returns the name of the environment variable corresponding to the
 // given flag.  For example, FlagToEnvVar("foo") will return
 // "GTEST_FOO" in the open-source version.
-static std::string FlagToEnvVar(const char *flag) {
+static std::string FlagToEnvVar(const char* flag) {
   const std::string full_flag =
       (Message() << GTEST_FLAG_PREFIX_ << flag).GetString();
 
@@ -1146,9 +1146,9 @@ static std::string FlagToEnvVar(const char *flag) {
 // Parses 'str' for a 32-bit signed integer.  If successful, writes
 // the result to *value and returns true; otherwise leaves *value
 // unchanged and returns false.
-bool ParseInt32(const Message &src_text, const char *str, Int32 *value) {
+bool ParseInt32(const Message& src_text, const char* str, Int32* value) {
   // Parses the environment variable as a decimal integer.
-  char *end = NULL;
+  char* end = NULL;
   const long long_value = strtol(str, &end, 10);  // NOLINT
 
   // Has strtol() consumed all characters in the string?
@@ -1169,7 +1169,7 @@ bool ParseInt32(const Message &src_text, const char *str, Int32 *value) {
       // The parsed value overflows as a long.  (strtol() returns
       // LONG_MAX or LONG_MIN when the input overflows.)
       result != long_value
-    // The parsed value overflows as an Int32.
+      // The parsed value overflows as an Int32.
       ) {
     Message msg;
     msg << "WARNING: " << src_text
@@ -1188,25 +1188,25 @@ bool ParseInt32(const Message &src_text, const char *str, Int32 *value) {
 // the given flag; if it's not set, returns default_value.
 //
 // The value is considered true iff it's not "0".
-bool BoolFromGTestEnv(const char *flag, bool default_value) {
+bool BoolFromGTestEnv(const char* flag, bool default_value) {
 #if defined(GTEST_GET_BOOL_FROM_ENV_)
   return GTEST_GET_BOOL_FROM_ENV_(flag, default_value);
 #endif  // defined(GTEST_GET_BOOL_FROM_ENV_)
   const std::string env_var = FlagToEnvVar(flag);
-  const char *const string_value = posix::GetEnv(env_var.c_str());
+  const char* const string_value = posix::GetEnv(env_var.c_str());
   return string_value == NULL ?
-         default_value : strcmp(string_value, "0") != 0;
+      default_value : strcmp(string_value, "0") != 0;
 }
 
 // Reads and returns a 32-bit integer stored in the environment
 // variable corresponding to the given flag; if it isn't set or
 // doesn't represent a valid 32-bit integer, returns default_value.
-Int32 Int32FromGTestEnv(const char *flag, Int32 default_value) {
+Int32 Int32FromGTestEnv(const char* flag, Int32 default_value) {
 #if defined(GTEST_GET_INT32_FROM_ENV_)
   return GTEST_GET_INT32_FROM_ENV_(flag, default_value);
 #endif  // defined(GTEST_GET_INT32_FROM_ENV_)
   const std::string env_var = FlagToEnvVar(flag);
-  const char *const string_value = posix::GetEnv(env_var.c_str());
+  const char* const string_value = posix::GetEnv(env_var.c_str());
   if (string_value == NULL) {
     // The environment variable is not set.
     return default_value;
@@ -1226,12 +1226,12 @@ Int32 Int32FromGTestEnv(const char *flag, Int32 default_value) {
 
 // Reads and returns the string environment variable corresponding to
 // the given flag; if it's not set, returns default_value.
-std::string StringFromGTestEnv(const char *flag, const char *default_value) {
+std::string StringFromGTestEnv(const char* flag, const char* default_value) {
 #if defined(GTEST_GET_STRING_FROM_ENV_)
   return GTEST_GET_STRING_FROM_ENV_(flag, default_value);
 #endif  // defined(GTEST_GET_STRING_FROM_ENV_)
   const std::string env_var = FlagToEnvVar(flag);
-  const char *value = posix::GetEnv(env_var.c_str());
+  const char* value = posix::GetEnv(env_var.c_str());
   if (value != NULL) {
     return value;
   }

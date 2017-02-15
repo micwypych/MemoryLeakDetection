@@ -52,16 +52,9 @@ class MockFoo {
  public:
   MockFoo() {}
 
-  MOCK_METHOD3(Bar, char(
-      const std::string &s,
-      int i,
-      double x));
-  MOCK_METHOD2(Bar2, bool(int
-      x, int
-      y));
-  MOCK_METHOD2(Bar3, void(int
-      x, int
-      y));
+  MOCK_METHOD3(Bar, char(const std::string& s, int i, double x));
+  MOCK_METHOD2(Bar2, bool(int x, int y));
+  MOCK_METHOD2(Bar3, void(int x, int y));
 
  private:
   GTEST_DISALLOW_COPY_AND_ASSIGN_(MockFoo);
@@ -259,8 +252,8 @@ TEST_F(GMockOutputTest, ExplicitActionsRunOutWithDefaultAction) {
 }
 
 TEST_F(GMockOutputTest, CatchesLeakedMocks) {
-  MockFoo *foo1 = new MockFoo;
-  MockFoo *foo2 = new MockFoo;
+  MockFoo* foo1 = new MockFoo;
+  MockFoo* foo2 = new MockFoo;
 
   // Invokes ON_CALL on foo1.
   ON_CALL(*foo1, Bar(_, _, _)).WillByDefault(Return('a'));
@@ -276,7 +269,7 @@ TEST_F(GMockOutputTest, CatchesLeakedMocks) {
 }
 
 void TestCatchesLeakedMocksInAdHocTests() {
-  MockFoo *foo = new MockFoo;
+  MockFoo* foo = new MockFoo;
 
   // Invokes EXPECT_CALL on foo.
   EXPECT_CALL(*foo, Bar2(_, _));

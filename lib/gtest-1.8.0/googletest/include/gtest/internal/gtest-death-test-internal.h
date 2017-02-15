@@ -76,18 +76,18 @@ class GTEST_API_ DeathTest {
   // argument is set.  If the death test should be skipped, the pointer
   // is set to NULL; otherwise, it is set to the address of a new concrete
   // DeathTest object that controls the execution of the current test.
-  static bool Create(const char *statement, const RE *regex,
-                     const char *file, int line, DeathTest **test);
+  static bool Create(const char* statement, const RE* regex,
+                     const char* file, int line, DeathTest** test);
   DeathTest();
-  virtual ~DeathTest() {}
+  virtual ~DeathTest() { }
 
   // A helper class that aborts a death test when it's deleted.
   class ReturnSentinel {
    public:
-    explicit ReturnSentinel(DeathTest *test) : test_(test) {}
+    explicit ReturnSentinel(DeathTest* test) : test_(test) { }
     ~ReturnSentinel() { test_->Abort(TEST_ENCOUNTERED_RETURN_STATEMENT); }
    private:
-    DeathTest *const test_;
+    DeathTest* const test_;
     GTEST_DISALLOW_COPY_AND_ASSIGN_(ReturnSentinel);
   } GTEST_ATTRIBUTE_UNUSED_;
 
@@ -125,9 +125,9 @@ class GTEST_API_ DeathTest {
 
   // Returns a human-readable outcome message regarding the outcome of
   // the last death test.
-  static const char *LastMessage();
+  static const char* LastMessage();
 
-  static void set_last_death_test_message(const std::string &message);
+  static void set_last_death_test_message(const std::string& message);
 
  private:
   // A string containing a description of the outcome of the last death test.
@@ -139,16 +139,16 @@ class GTEST_API_ DeathTest {
 // Factory interface for death tests.  May be mocked out for testing.
 class DeathTestFactory {
  public:
-  virtual ~DeathTestFactory() {}
-  virtual bool Create(const char *statement, const RE *regex,
-                      const char *file, int line, DeathTest **test) = 0;
+  virtual ~DeathTestFactory() { }
+  virtual bool Create(const char* statement, const RE* regex,
+                      const char* file, int line, DeathTest** test) = 0;
 };
 
 // A concrete DeathTestFactory implementation for normal use.
 class DefaultDeathTestFactory : public DeathTestFactory {
  public:
-  virtual bool Create(const char *statement, const RE *regex,
-                      const char *file, int line, DeathTest **test);
+  virtual bool Create(const char* statement, const RE* regex,
+                      const char* file, int line, DeathTest** test);
 };
 
 // Returns true if exit_status describes a process that was terminated
@@ -233,7 +233,7 @@ GTEST_API_ bool ExitedUnsuccessfully(int exit_status);
 // RUN_ALL_TESTS was called.
 class InternalRunDeathTestFlag {
  public:
-  InternalRunDeathTestFlag(const std::string &a_file,
+  InternalRunDeathTestFlag(const std::string& a_file,
                            int a_line,
                            int an_index,
                            int a_write_fd)
@@ -245,7 +245,7 @@ class InternalRunDeathTestFlag {
       posix::Close(write_fd_);
   }
 
-  const std::string &file() const { return file_; }
+  const std::string& file() const { return file_; }
   int line() const { return line_; }
   int index() const { return index_; }
   int write_fd() const { return write_fd_; }
@@ -262,7 +262,7 @@ class InternalRunDeathTestFlag {
 // Returns a newly created InternalRunDeathTestFlag object with fields
 // initialized from the GTEST_FLAG(internal_run_death_test) flag if
 // the flag is specified; otherwise returns NULL.
-InternalRunDeathTestFlag *ParseInternalRunDeathTestFlag();
+InternalRunDeathTestFlag* ParseInternalRunDeathTestFlag();
 
 #else  // GTEST_HAS_DEATH_TEST
 

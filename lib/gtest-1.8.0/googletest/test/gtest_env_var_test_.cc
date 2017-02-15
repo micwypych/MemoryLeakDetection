@@ -50,7 +50,7 @@ namespace testing {
 TEST(GTestEnvVarTest, Dummy) {
 }
 
-void PrintFlag(const char *flag) {
+void PrintFlag(const char* flag) {
   if (strcmp(flag, "break_on_failure") == 0) {
     cout << GTEST_FLAG(break_on_failure);
     return;
@@ -113,7 +113,7 @@ void PrintFlag(const char *flag) {
 
 }  // namespace testing
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
 
   if (argc != 2) {

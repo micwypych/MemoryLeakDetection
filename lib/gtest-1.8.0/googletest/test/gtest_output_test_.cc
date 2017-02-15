@@ -108,7 +108,7 @@ TEST(NonfatalFailureTest, EscapesStringOperands) {
   std::string actual = "actual \"string\"";
   EXPECT_EQ(kGoldenString, actual);
 
-  const char *golden = kGoldenString;
+  const char* golden = kGoldenString;
   EXPECT_EQ(golden, actual);
 }
 
@@ -151,11 +151,11 @@ TEST(FatalFailureTest, NonfatalFailureInSubroutine) {
 // Tests interleaving user logging and Google Test assertions.
 TEST(LoggingTest, InterleavingLoggingAndAssertions) {
   static const int a[4] = {
-      3, 9, 2, 6
+    3, 9, 2, 6
   };
 
   printf("(expecting 2 failures on (3) >= (a[i]))\n");
-  for (int i = 0; i < static_cast<int>(sizeof(a) / sizeof(*a)); i++) {
+  for (int i = 0; i < static_cast<int>(sizeof(a)/sizeof(*a)); i++) {
     printf("i == %d\n", i);
     EXPECT_GE(3, a[i]);
   }
@@ -282,7 +282,7 @@ struct CheckPoints {
   Notification n3;
 };
 
-static void ThreadWithScopedTrace(CheckPoints *check_points) {
+static void ThreadWithScopedTrace(CheckPoints* check_points) {
   {
     SCOPED_TRACE("Trace B");
     ADD_FAILURE()
@@ -302,9 +302,9 @@ TEST(SCOPED_TRACETest, WorksConcurrently) {
   printf("(expecting 6 failures)\n");
 
   CheckPoints check_points;
-  ThreadWithParam<CheckPoints *> thread(&ThreadWithScopedTrace,
-                                        &check_points,
-                                        NULL);
+  ThreadWithParam<CheckPoints*> thread(&ThreadWithScopedTrace,
+                                       &check_points,
+                                       NULL);
   check_points.n1.WaitForNotification();
 
   {
@@ -484,7 +484,7 @@ struct SpawnThreadNotifications {
 
 // The function to be executed in the thread spawn by the
 // MultipleThreads test (below).
-static void ThreadRoutine(SpawnThreadNotifications *notifications) {
+static void ThreadRoutine(SpawnThreadNotifications* notifications) {
   // Signals the main thread that this thread has started.
   notifications->spawn_thread_started.Notify();
 
@@ -499,7 +499,7 @@ class DeathTestAndMultiThreadsTest : public testing::Test {
  protected:
   // Starts a thread and waits for it to begin.
   virtual void SetUp() {
-    thread_.reset(new ThreadWithParam<SpawnThreadNotifications *>(
+    thread_.reset(new ThreadWithParam<SpawnThreadNotifications*>(
         &ThreadRoutine, &notifications_, NULL));
     notifications_.spawn_thread_started.WaitForNotification();
   }
@@ -514,7 +514,7 @@ class DeathTestAndMultiThreadsTest : public testing::Test {
 
  private:
   SpawnThreadNotifications notifications_;
-  testing::internal::scoped_ptr<ThreadWithParam<SpawnThreadNotifications *> >
+  testing::internal::scoped_ptr<ThreadWithParam<SpawnThreadNotifications*> >
       thread_;
 };
 
@@ -597,8 +597,8 @@ int global_integer = 0;
 TEST(ExpectNonfatalFailureTest, CanReferenceGlobalVariables) {
   global_integer = 0;
   EXPECT_NONFATAL_FAILURE({
-                            EXPECT_EQ(1, global_integer) << "Expected non-fatal failure.";
-                          }, "Expected non-fatal failure.");
+    EXPECT_EQ(1, global_integer) << "Expected non-fatal failure.";
+  }, "Expected non-fatal failure.");
 }
 
 // Tests that EXPECT_NONFATAL_FAILURE() can reference local variables
@@ -608,16 +608,16 @@ TEST(ExpectNonfatalFailureTest, CanReferenceLocalVariables) {
   static int n;
   n = 1;
   EXPECT_NONFATAL_FAILURE({
-                            EXPECT_EQ(m, n) << "Expected non-fatal failure.";
-                          }, "Expected non-fatal failure.");
+    EXPECT_EQ(m, n) << "Expected non-fatal failure.";
+  }, "Expected non-fatal failure.");
 }
 
 // Tests that EXPECT_NONFATAL_FAILURE() succeeds when there is exactly
 // one non-fatal failure and no fatal failure.
 TEST(ExpectNonfatalFailureTest, SucceedsWhenThereIsOneNonfatalFailure) {
   EXPECT_NONFATAL_FAILURE({
-                            ADD_FAILURE() << "Expected non-fatal failure.";
-                          }, "Expected non-fatal failure.");
+    ADD_FAILURE() << "Expected non-fatal failure.";
+  }, "Expected non-fatal failure.");
 }
 
 // Tests that EXPECT_NONFATAL_FAILURE() fails when there is no
@@ -625,7 +625,7 @@ TEST(ExpectNonfatalFailureTest, SucceedsWhenThereIsOneNonfatalFailure) {
 TEST(ExpectNonfatalFailureTest, FailsWhenThereIsNoNonfatalFailure) {
   printf("(expecting a failure)\n");
   EXPECT_NONFATAL_FAILURE({
-                          }, "");
+  }, "");
 }
 
 // Tests that EXPECT_NONFATAL_FAILURE() fails when there are two
@@ -633,9 +633,9 @@ TEST(ExpectNonfatalFailureTest, FailsWhenThereIsNoNonfatalFailure) {
 TEST(ExpectNonfatalFailureTest, FailsWhenThereAreTwoNonfatalFailures) {
   printf("(expecting a failure)\n");
   EXPECT_NONFATAL_FAILURE({
-                            ADD_FAILURE() << "Expected non-fatal failure 1.";
-                            ADD_FAILURE() << "Expected non-fatal failure 2.";
-                          }, "");
+    ADD_FAILURE() << "Expected non-fatal failure 1.";
+    ADD_FAILURE() << "Expected non-fatal failure 2.";
+  }, "");
 }
 
 // Tests that EXPECT_NONFATAL_FAILURE() fails when there is one fatal
@@ -643,8 +643,8 @@ TEST(ExpectNonfatalFailureTest, FailsWhenThereAreTwoNonfatalFailures) {
 TEST(ExpectNonfatalFailureTest, FailsWhenThereIsOneFatalFailure) {
   printf("(expecting a failure)\n");
   EXPECT_NONFATAL_FAILURE({
-                            FAIL() << "Expected fatal failure.";
-                          }, "");
+    FAIL() << "Expected fatal failure.";
+  }, "");
 }
 
 // Tests that EXPECT_NONFATAL_FAILURE() fails when the statement being
@@ -652,8 +652,8 @@ TEST(ExpectNonfatalFailureTest, FailsWhenThereIsOneFatalFailure) {
 TEST(ExpectNonfatalFailureTest, FailsWhenStatementReturns) {
   printf("(expecting a failure)\n");
   EXPECT_NONFATAL_FAILURE({
-                            return;
-                          }, "");
+    return;
+  }, "");
 }
 
 #if GTEST_HAS_EXCEPTIONS
@@ -664,9 +664,9 @@ TEST(ExpectNonfatalFailureTest, FailsWhenStatementThrows) {
   printf("(expecting a failure)\n");
   try {
     EXPECT_NONFATAL_FAILURE({
-                              throw 0;
-                            }, "");
-  } catch (int) {  // NOLINT
+      throw 0;
+    }, "");
+  } catch(int) {  // NOLINT
   }
 }
 
@@ -676,8 +676,8 @@ TEST(ExpectNonfatalFailureTest, FailsWhenStatementThrows) {
 TEST(ExpectFatalFailureTest, CanReferenceGlobalVariables) {
   global_integer = 0;
   EXPECT_FATAL_FAILURE({
-                         ASSERT_EQ(1, global_integer) << "Expected fatal failure.";
-                       }, "Expected fatal failure.");
+    ASSERT_EQ(1, global_integer) << "Expected fatal failure.";
+  }, "Expected fatal failure.");
 }
 
 // Tests that EXPECT_FATAL_FAILURE() can reference local static
@@ -686,16 +686,16 @@ TEST(ExpectFatalFailureTest, CanReferenceLocalStaticVariables) {
   static int n;
   n = 1;
   EXPECT_FATAL_FAILURE({
-                         ASSERT_EQ(0, n) << "Expected fatal failure.";
-                       }, "Expected fatal failure.");
+    ASSERT_EQ(0, n) << "Expected fatal failure.";
+  }, "Expected fatal failure.");
 }
 
 // Tests that EXPECT_FATAL_FAILURE() succeeds when there is exactly
 // one fatal failure and no non-fatal failure.
 TEST(ExpectFatalFailureTest, SucceedsWhenThereIsOneFatalFailure) {
   EXPECT_FATAL_FAILURE({
-                         FAIL() << "Expected fatal failure.";
-                       }, "Expected fatal failure.");
+    FAIL() << "Expected fatal failure.";
+  }, "Expected fatal failure.");
 }
 
 // Tests that EXPECT_FATAL_FAILURE() fails when there is no fatal
@@ -703,7 +703,7 @@ TEST(ExpectFatalFailureTest, SucceedsWhenThereIsOneFatalFailure) {
 TEST(ExpectFatalFailureTest, FailsWhenThereIsNoFatalFailure) {
   printf("(expecting a failure)\n");
   EXPECT_FATAL_FAILURE({
-                       }, "");
+  }, "");
 }
 
 // A helper for generating a fatal failure.
@@ -716,9 +716,9 @@ void FatalFailure() {
 TEST(ExpectFatalFailureTest, FailsWhenThereAreTwoFatalFailures) {
   printf("(expecting a failure)\n");
   EXPECT_FATAL_FAILURE({
-                         FatalFailure();
-                         FatalFailure();
-                       }, "");
+    FatalFailure();
+    FatalFailure();
+  }, "");
 }
 
 // Tests that EXPECT_FATAL_FAILURE() fails when there is one non-fatal
@@ -726,8 +726,8 @@ TEST(ExpectFatalFailureTest, FailsWhenThereAreTwoFatalFailures) {
 TEST(ExpectFatalFailureTest, FailsWhenThereIsOneNonfatalFailure) {
   printf("(expecting a failure)\n");
   EXPECT_FATAL_FAILURE({
-                         ADD_FAILURE() << "Expected non-fatal failure.";
-                       }, "");
+    ADD_FAILURE() << "Expected non-fatal failure.";
+  }, "");
 }
 
 // Tests that EXPECT_FATAL_FAILURE() fails when the statement being
@@ -735,8 +735,8 @@ TEST(ExpectFatalFailureTest, FailsWhenThereIsOneNonfatalFailure) {
 TEST(ExpectFatalFailureTest, FailsWhenStatementReturns) {
   printf("(expecting a failure)\n");
   EXPECT_FATAL_FAILURE({
-                         return;
-                       }, "");
+    return;
+  }, "");
 }
 
 #if GTEST_HAS_EXCEPTIONS
@@ -747,9 +747,9 @@ TEST(ExpectFatalFailureTest, FailsWhenStatementThrows) {
   printf("(expecting a failure)\n");
   try {
     EXPECT_FATAL_FAILURE({
-                           throw 0;
-                         }, "");
-  } catch (int) {  // NOLINT
+      throw 0;
+    }, "");
+  } catch(int) {  // NOLINT
   }
 }
 
@@ -759,7 +759,7 @@ TEST(ExpectFatalFailureTest, FailsWhenStatementThrows) {
 
 #if GTEST_HAS_PARAM_TEST
 
-std::string ParamNameFunc(const testing::TestParamInfo<std::string> &info) {
+std::string ParamNameFunc(const testing::TestParamInfo<std::string>& info) {
   return info.param;
 }
 
@@ -784,7 +784,7 @@ INSTANTIATE_TEST_CASE_P(PrintingStrings,
 // This #ifdef block tests the output of typed tests.
 #if GTEST_HAS_TYPED_TEST
 
-template<typename T>
+template <typename T>
 class TypedTest : public testing::Test {
 };
 
@@ -803,7 +803,7 @@ TYPED_TEST(TypedTest, Failure) {
 // This #ifdef block tests the output of type-parameterized tests.
 #if GTEST_HAS_TYPED_TEST_P
 
-template<typename T>
+template <typename T>
 class TypedTestP : public testing::Test {
 };
 
@@ -837,7 +837,7 @@ TEST(ADeathTest, ShouldRunFirst) {
 // We rely on the golden file to verify that typed tests whose test
 // case name ends with DeathTest are run first.
 
-template<typename T>
+template <typename T>
 class ATypedDeathTest : public testing::Test {
 };
 
@@ -855,7 +855,7 @@ TYPED_TEST(ATypedDeathTest, ShouldRunFirst) {
 // We rely on the golden file to verify that type-parameterized tests
 // whose test case name ends with DeathTest are run first.
 
-template<typename T>
+template <typename T>
 class ATypeParamDeathTest : public testing::Test {
 };
 
@@ -896,11 +896,11 @@ TEST_F(ExpectFailureTest, ExpectFatalFailure) {
   // Expected fatal failure, but got a non-fatal failure.
   printf("(expecting 1 failure)\n");
   EXPECT_FATAL_FAILURE(AddFailure(NONFATAL_FAILURE), "Expected non-fatal "
-      "failure.");
+                       "failure.");
   // Wrong message.
   printf("(expecting 1 failure)\n");
   EXPECT_FATAL_FAILURE(AddFailure(FATAL_FAILURE), "Some other fatal failure "
-      "expected.");
+                       "expected.");
 }
 
 TEST_F(ExpectFailureTest, ExpectNonFatalFailure) {
@@ -913,7 +913,7 @@ TEST_F(ExpectFailureTest, ExpectNonFatalFailure) {
   // Wrong message.
   printf("(expecting 1 failure)\n");
   EXPECT_NONFATAL_FAILURE(AddFailure(NONFATAL_FAILURE), "Some other non-fatal "
-      "failure.");
+                          "failure.");
 }
 
 #if GTEST_IS_THREADSAFE
@@ -978,7 +978,7 @@ TEST_F(ExpectFailureTest, ExpectNonFatalFailureOnAllThreads) {
   // Expected non-fatal failure, but succeeds.
   printf("(expecting 1 failure)\n");
   EXPECT_NONFATAL_FAILURE_ON_ALL_THREADS(SUCCEED(), "Expected non-fatal "
-      "failure.");
+                                         "failure.");
   // Expected non-fatal failure, but got a fatal failure.
   printf("(expecting 1 failure)\n");
   EXPECT_NONFATAL_FAILURE_ON_ALL_THREADS(AddFailure(FATAL_FAILURE),

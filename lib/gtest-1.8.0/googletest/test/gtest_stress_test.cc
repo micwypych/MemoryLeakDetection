@@ -61,7 +61,7 @@ using internal::scoped_ptr;
 // How many threads to create?
 const int kThreadCount = 50;
 
-std::string IdToKey(int id, const char *suffix) {
+std::string IdToKey(int id, const char* suffix) {
   Message key;
   key << "key_" << id << "_" << suffix;
   return key.GetString();
@@ -74,13 +74,13 @@ std::string IdToString(int id) {
 }
 
 void ExpectKeyAndValueWereRecordedForId(
-    const std::vector<TestProperty> &properties,
-    int id, const char *suffix) {
+    const std::vector<TestProperty>& properties,
+    int id, const char* suffix) {
   TestPropertyKeyIs matches_key(IdToKey(id, suffix).c_str());
   const std::vector<TestProperty>::const_iterator property =
       std::find_if(properties.begin(), properties.end(), matches_key);
   ASSERT_TRUE(property != properties.end())
-                << "expecting " << suffix << " value for id " << id;
+      << "expecting " << suffix << " value for id " << id;
   EXPECT_STREQ(IdToString(id).c_str(), property->value());
 }
 
@@ -115,11 +115,11 @@ void ManyAsserts(int id) {
 }
 
 void CheckTestFailureCount(int expected_failures) {
-  const TestInfo *const info = UnitTest::GetInstance()->current_test_info();
-  const TestResult *const result = info->result();
+  const TestInfo* const info = UnitTest::GetInstance()->current_test_info();
+  const TestResult* const result = info->result();
   GTEST_CHECK_(expected_failures == result->total_part_count())
-        << "Logged " << result->total_part_count() << " failures "
-        << " vs. " << expected_failures << " expected";
+      << "Logged " << result->total_part_count() << " failures "
+      << " vs. " << expected_failures << " expected";
 }
 
 // Tests using SCOPED_TRACE() and Google Test assertions in many threads
@@ -141,8 +141,8 @@ TEST(StressTest, CanUseScopedTraceAndAssertionsInManyThreads) {
   }
 
   // Ensures that kThreadCount*kThreadCount failures have been reported.
-  const TestInfo *const info = UnitTest::GetInstance()->current_test_info();
-  const TestResult *const result = info->result();
+  const TestInfo* const info = UnitTest::GetInstance()->current_test_info();
+  const TestResult* const result = info->result();
 
   std::vector<TestProperty> properties;
   // We have no access to the TestResult's list of properties but we can
@@ -151,13 +151,13 @@ TEST(StressTest, CanUseScopedTraceAndAssertionsInManyThreads) {
     properties.push_back(result->GetTestProperty(i));
 
   EXPECT_EQ(kThreadCount * 2 + 1, result->test_property_count())
-            << "String and int values recorded on each thread, "
-            << "as well as one shared_key";
+      << "String and int values recorded on each thread, "
+      << "as well as one shared_key";
   for (int i = 0; i < kThreadCount; ++i) {
     ExpectKeyAndValueWereRecordedForId(properties, i, "string");
     ExpectKeyAndValueWereRecordedForId(properties, i, "int");
   }
-  CheckTestFailureCount(kThreadCount * kThreadCount);
+  CheckTestFailureCount(kThreadCount*kThreadCount);
 }
 
 void FailingThread(bool is_fatal) {

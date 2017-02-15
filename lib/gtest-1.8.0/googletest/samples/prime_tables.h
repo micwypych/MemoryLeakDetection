@@ -58,7 +58,7 @@ class OnTheFlyPrimeTable : public PrimeTable {
   virtual bool IsPrime(int n) const {
     if (n <= 1) return false;
 
-    for (int i = 2; i * i <= n; i++) {
+    for (int i = 2; i*i <= n; i++) {
       // n is divisible by an integer other than 1 and itself.
       if ((n % i) == 0) return false;
     }
@@ -107,17 +107,17 @@ class PreCalculatedPrimeTable : public PrimeTable {
       if (!is_prime_[i]) continue;
 
       // Marks all multiples of i (except i itself) as non-prime.
-      for (int j = 2 * i; j <= max; j += i) {
+      for (int j = 2*i; j <= max; j += i) {
         is_prime_[j] = false;
       }
     }
   }
 
   const int is_prime_size_;
-  bool *const is_prime_;
+  bool* const is_prime_;
 
   // Disables compiler warning "assignment operator could not be generated."
-  void operator=(const PreCalculatedPrimeTable &rhs);
+  void operator=(const PreCalculatedPrimeTable& rhs);
 };
 
 #endif  // GTEST_SAMPLES_PRIME_TABLES_H_

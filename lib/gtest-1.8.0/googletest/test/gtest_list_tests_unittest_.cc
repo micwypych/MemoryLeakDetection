@@ -78,16 +78,16 @@ TEST(FooDeathTest, Test1) {
 
 class MyType {
  public:
-  explicit MyType(const std::string &a_value) : value_(a_value) {}
+  explicit MyType(const std::string& a_value) : value_(a_value) {}
 
-  const std::string &value() const { return value_; }
+  const std::string& value() const { return value_; }
 
  private:
   std::string value_;
 };
 
 // Teaches Google Test how to print a MyType.
-void PrintTo(const MyType &x, std::ostream *os) {
+void PrintTo(const MyType& x, std::ostream* os) {
   *os << x.value();
 }
 
@@ -104,8 +104,7 @@ INSTANTIATE_TEST_CASE_P(
     MyInstantiation, ValueParamTest,
     testing::Values(MyType("one line"),
                     MyType("two\nlines"),
-                    MyType(
-                        "a very\nloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong line")));  // NOLINT
+                    MyType("a very\nloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong line")));  // NOLINT
 
 // A group of typed tests.
 
@@ -114,18 +113,16 @@ INSTANTIATE_TEST_CASE_P(
 class VeryLoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooogName {  // NOLINT
 };
 
-template<typename T>
+template <typename T>
 class TypedTest : public testing::Test {
 };
 
-template<typename T, int kSize>
+template <typename T, int kSize>
 class MyArray {
 };
 
-typedef testing::Types<
-    VeryLoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooogName,  // NOLINT
-    int *,
-    MyArray<bool, 42> > MyTypes;
+typedef testing::Types<VeryLoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooogName,  // NOLINT
+                       int*, MyArray<bool, 42> > MyTypes;
 
 TYPED_TEST_CASE(TypedTest, MyTypes);
 
@@ -137,7 +134,7 @@ TYPED_TEST(TypedTest, TestB) {
 
 // A group of type-parameterized tests.
 
-template<typename T>
+template <typename T>
 class TypeParamTest : public testing::Test {
 };
 

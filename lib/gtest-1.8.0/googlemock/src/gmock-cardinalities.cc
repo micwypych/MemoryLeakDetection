@@ -82,7 +82,7 @@ class BetweenCardinalityImpl : public CardinalityInterface {
     return call_count >= max_;
   }
 
-  virtual void DescribeTo(::std::ostream *os) const;
+  virtual void DescribeTo(::std::ostream* os) const;
 
  private:
   const int min_;
@@ -105,7 +105,7 @@ inline internal::string FormatTimes(int n) {
 }
 
 // Describes the Between(m, n) cardinality in human-friendly text.
-void BetweenCardinalityImpl::DescribeTo(::std::ostream *os) const {
+void BetweenCardinalityImpl::DescribeTo(::std::ostream* os) const {
   if (min_ == 0) {
     if (max_ == 0) {
       *os << "never called";
@@ -128,7 +128,7 @@ void BetweenCardinalityImpl::DescribeTo(::std::ostream *os) const {
 
 // Describes the given call count to an ostream.
 void Cardinality::DescribeActualCallCountTo(int actual_call_count,
-                                            ::std::ostream *os) {
+                                            ::std::ostream* os) {
   if (actual_call_count > 0) {
     *os << "called " << FormatTimes(actual_call_count);
   } else {

@@ -82,11 +82,11 @@ class FooInterface {
   virtual bool Unary(int x) = 0;
   virtual long Binary(short x, int y) = 0;  // NOLINT
   virtual int Decimal(bool b, char c, short d, int e, long f,  // NOLINT
-                      float g, double h, unsigned i, char *j, const string &k)
-  = 0;
+                      float g, double h, unsigned i, char* j, const string& k)
+      = 0;
 
-  virtual bool TakesNonConstReference(int &n) = 0;  // NOLINT
-  virtual string TakesConstReference(const int &n) = 0;
+  virtual bool TakesNonConstReference(int& n) = 0;  // NOLINT
+  virtual string TakesConstReference(const int& n) = 0;
 #ifdef GMOCK_ALLOWS_CONST_PARAM_FUNCTIONS
   virtual bool TakesConst(const int x) = 0;
 #endif  // GMOCK_ALLOWS_CONST_PARAM_FUNCTIONS
@@ -101,7 +101,7 @@ class FooInterface {
   virtual char OverloadedOnConstness() const = 0;
 
   virtual int TypeWithHole(int (*func)()) = 0;
-  virtual int TypeWithComma(const std::map<int, string> &a_map) = 0;
+  virtual int TypeWithComma(const std::map<int, string>& a_map) = 0;
 
 #if GTEST_OS_WINDOWS
   STDMETHOD_(int, CTNullary)() = 0;
@@ -125,8 +125,7 @@ class MockFoo : public FooInterface {
   MockFoo() {}
 
   // Makes sure that a mock function parameter can be named.
-  MOCK_METHOD1(VoidReturning, void(int
-      n));  // NOLINT
+  MOCK_METHOD1(VoidReturning, void(int n));  // NOLINT
 
   MOCK_METHOD0(Nullary, int());  // NOLINT
 
@@ -134,16 +133,13 @@ class MockFoo : public FooInterface {
   MOCK_METHOD1(Unary, bool(int));  // NOLINT
   MOCK_METHOD2(Binary, long(short, int));  // NOLINT
   MOCK_METHOD10(Decimal, int(bool, char, short, int, long, float,  // NOLINT
-                             double, unsigned, char * ,
-      const string &str));
+                             double, unsigned, char*, const string& str));
 
-  MOCK_METHOD1(TakesNonConstReference, bool(int & ));  // NOLINT
-  MOCK_METHOD1(TakesConstReference, string(
-      const int&));
+  MOCK_METHOD1(TakesNonConstReference, bool(int&));  // NOLINT
+  MOCK_METHOD1(TakesConstReference, string(const int&));
 
 #ifdef GMOCK_ALLOWS_CONST_PARAM_FUNCTIONS
-  MOCK_METHOD1(TakesConst, bool(
-      const int));  // NOLINT
+  MOCK_METHOD1(TakesConst, bool(const int));  // NOLINT
 #endif
 
   // Tests that the function return type can contain unprotected comma.
@@ -160,10 +156,8 @@ class MockFoo : public FooInterface {
   MOCK_METHOD0(OverloadedOnConstness, int());  // NOLINT
   MOCK_CONST_METHOD0(OverloadedOnConstness, char());  // NOLINT
 
-  MOCK_METHOD1(TypeWithHole, int(int(*)
-      ()));  // NOLINT
-  MOCK_METHOD1(TypeWithComma, int(
-      const std::map<int, string>&));  // NOLINT
+  MOCK_METHOD1(TypeWithHole, int(int (*)()));  // NOLINT
+  MOCK_METHOD1(TypeWithComma, int(const std::map<int, string>&));  // NOLINT
 
 #if GTEST_OS_WINDOWS
   MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, CTNullary, int());
@@ -189,7 +183,7 @@ class FunctionMockerTest : public testing::Test {
  protected:
   FunctionMockerTest() : foo_(&mock_foo_) {}
 
-  FooInterface *const foo_;
+  FooInterface* const foo_;
   MockFoo mock_foo_;
 };
 
@@ -387,26 +381,25 @@ TEST(ExpectCallTest, UnmentionedFunctionCanBeCalledAnyNumberOfTimes) {
 
 // Tests mocking template interfaces.
 
-template<typename T>
+template <typename T>
 class StackInterface {
  public:
   virtual ~StackInterface() {}
 
   // Template parameter appears in function parameter.
-  virtual void Push(const T &value) = 0;
+  virtual void Push(const T& value) = 0;
   virtual void Pop() = 0;
   virtual int GetSize() const = 0;
   // Template parameter appears in function return type.
-  virtual const T &GetTop() const = 0;
+  virtual const T& GetTop() const = 0;
 };
 
-template<typename T>
+template <typename T>
 class MockStack : public StackInterface<T> {
  public:
   MockStack() {}
 
-  MOCK_METHOD1_T(Push, void(
-      const T &elem));
+  MOCK_METHOD1_T(Push, void(const T& elem));
   MOCK_METHOD0_T(Pop, void());
   MOCK_CONST_METHOD0_T(GetSize, int());  // NOLINT
   MOCK_CONST_METHOD0_T(GetTop, const T&());
@@ -551,7 +544,7 @@ class MockOverloadedOnConstness {
 
 TEST(OverloadedMockMethodTest, CanOverloadOnConstnessInMacroBody) {
   MockOverloadedOnConstness mock;
-  const MockOverloadedOnConstness *const_mock = &mock;
+  const MockOverloadedOnConstness* const_mock = &mock;
   EXPECT_CALL(mock, Overloaded(1)).WillOnce(Return(2));
   EXPECT_CALL(*const_mock, Overloaded(1)).WillOnce(Return(3));
 
@@ -615,10 +608,10 @@ TEST(MockFunctionTest, AsStdFunction) {
 }
 
 TEST(MockFunctionTest, AsStdFunctionReturnsReference) {
-  MockFunction<int &()> foo;
+  MockFunction<int&()> foo;
   int value = 1;
   EXPECT_CALL(foo, Call()).WillOnce(ReturnRef(value));
-  int &ref = foo.AsStdFunction()();
+  int& ref = foo.AsStdFunction()();
   EXPECT_EQ(1, ref);
   value = 2;
   EXPECT_EQ(2, ref);

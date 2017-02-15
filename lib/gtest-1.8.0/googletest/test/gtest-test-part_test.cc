@@ -54,10 +54,11 @@ class TestPartResultTest : public Test {
   TestPartResult r1_, r2_, r3_;
 };
 
+
 TEST_F(TestPartResultTest, ConstructorWorks) {
   Message message;
   message << "something is terribly wrong";
-  message << static_cast<const char *>(testing::internal::kStackTraceMarker);
+  message << static_cast<const char*>(testing::internal::kStackTraceMarker);
   message << "some unimportant stack trace";
 
   const TestPartResult result(TestPartResult::kNonFatalFailure,

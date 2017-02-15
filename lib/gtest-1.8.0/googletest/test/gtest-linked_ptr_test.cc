@@ -41,12 +41,12 @@ using testing::Message;
 using testing::internal::linked_ptr;
 
 int num;
-Message *history = NULL;
+Message* history = NULL;
 
 // Class which tracks allocation/deallocation
 class A {
  public:
-  A() : mynum(num++) { *history << "A" << mynum << " ctor\n"; }
+  A(): mynum(num++) { *history << "A" << mynum << " ctor\n"; }
   virtual ~A() { *history << "A" << mynum << " dtor\n"; }
   virtual void Use() { *history << "A" << mynum << " use\n"; }
  protected:
@@ -80,9 +80,9 @@ TEST_F(LinkedPtrTest, GeneralTest) {
     // Use explicit function call notation here to suppress self-assign warning.
     a0.operator=(a0);
     a1 = a2;
-    ASSERT_EQ(a0.get(), static_cast<A *>(NULL));
-    ASSERT_EQ(a1.get(), static_cast<A *>(NULL));
-    ASSERT_EQ(a2.get(), static_cast<A *>(NULL));
+    ASSERT_EQ(a0.get(), static_cast<A*>(NULL));
+    ASSERT_EQ(a1.get(), static_cast<A*>(NULL));
+    ASSERT_EQ(a2.get(), static_cast<A*>(NULL));
     ASSERT_TRUE(a0 == NULL);
     ASSERT_TRUE(a1 == NULL);
     ASSERT_TRUE(a2 == NULL);
@@ -128,27 +128,27 @@ TEST_F(LinkedPtrTest, GeneralTest) {
   }
 
   ASSERT_STREQ(
-      "A0 ctor\n"
-          "A1 ctor\n"
-          "A2 ctor\n"
-          "B2 ctor\n"
-          "A0 use\n"
-          "A0 use\n"
-          "B2 use\n"
-          "B2 use\n"
-          "B2 use\n"
-          "B2 use\n"
-          "B2 use\n"
-          "B2 dtor\n"
-          "A2 dtor\n"
-          "A0 use\n"
-          "A0 use\n"
-          "A1 use\n"
-          "A3 ctor\n"
-          "A0 dtor\n"
-          "A3 dtor\n"
-          "A1 dtor\n",
-      history->GetString().c_str());
+    "A0 ctor\n"
+    "A1 ctor\n"
+    "A2 ctor\n"
+    "B2 ctor\n"
+    "A0 use\n"
+    "A0 use\n"
+    "B2 use\n"
+    "B2 use\n"
+    "B2 use\n"
+    "B2 use\n"
+    "B2 use\n"
+    "B2 dtor\n"
+    "A2 dtor\n"
+    "A0 use\n"
+    "A0 use\n"
+    "A1 use\n"
+    "A3 ctor\n"
+    "A0 dtor\n"
+    "A3 dtor\n"
+    "A1 dtor\n",
+    history->GetString().c_str());
 }
 
 }  // Unnamed namespace

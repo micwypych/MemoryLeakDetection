@@ -53,12 +53,12 @@ class Water {
   // Normal Water declarations go here.
 
   // operator new and operator delete help us control water allocation.
-  void *operator new(size_t allocation_size) {
+  void* operator new(size_t allocation_size) {
     allocated_++;
     return malloc(allocation_size);
   }
 
-  void operator delete(void *block, size_t /* allocation_size */) {
+  void operator delete(void* block, size_t /* allocation_size */) {
     allocated_--;
     free(block);
   }
@@ -78,12 +78,12 @@ int Water::allocated_ = 0;
 class LeakChecker : public EmptyTestEventListener {
  private:
   // Called before a test starts.
-  virtual void OnTestStart(const TestInfo & /* test_info */) {
+  virtual void OnTestStart(const TestInfo& /* test_info */) {
     initially_allocated_ = Water::allocated();
   }
 
   // Called after a test ends.
-  virtual void OnTestEnd(const TestInfo & /* test_info */) {
+  virtual void OnTestEnd(const TestInfo& /* test_info */) {
     int difference = Water::allocated() - initially_allocated_;
 
     // You can generate a failure in any event handler except
@@ -96,14 +96,14 @@ class LeakChecker : public EmptyTestEventListener {
 };
 
 TEST(ListenersTest, DoesNotLeak) {
-  Water *water = new Water;
+  Water* water = new Water;
   delete water;
 }
 
 // This should fail when the --check_for_leaks command line flag is
 // specified.
 TEST(ListenersTest, LeaksWater) {
-  Water *water = new Water;
+  Water* water = new Water;
   EXPECT_TRUE(water != NULL);
 }
 
@@ -113,16 +113,16 @@ int main(int argc, char **argv) {
   InitGoogleTest(&argc, argv);
 
   bool check_for_leaks = false;
-  if (argc > 1 && strcmp(argv[1], "--check_for_leaks") == 0)
+  if (argc > 1 && strcmp(argv[1], "--check_for_leaks") == 0 )
     check_for_leaks = true;
   else
     printf("%s\n", "Run this program with --check_for_leaks to enable "
-        "custom leak checking in the tests.");
+           "custom leak checking in the tests.");
 
   // If we are given the --check_for_leaks command line flag, installs the
   // leak checker.
   if (check_for_leaks) {
-    TestEventListeners &listeners = UnitTest::GetInstance()->listeners();
+    TestEventListeners& listeners = UnitTest::GetInstance()->listeners();
 
     // Adds the leak checker to the end of the test event listener list,
     // after the default text output printer and the default XML report

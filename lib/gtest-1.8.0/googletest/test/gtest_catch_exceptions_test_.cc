@@ -112,7 +112,7 @@ class CxxExceptionInConstructorTest : public Test {
   static void TearDownTestCase() {
     printf("%s",
            "CxxExceptionInConstructorTest::TearDownTestCase() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
  protected:
@@ -138,7 +138,7 @@ TEST_F(CxxExceptionInConstructorTest, ThrowsExceptionInConstructor) {
 }
 
 // Exceptions in destructors are not supported in C++11.
-#if !defined(__GXX_EXPERIMENTAL_CXX0X__) && __cplusplus < 201103L
+#if !defined(__GXX_EXPERIMENTAL_CXX0X__) &&  __cplusplus < 201103L
 class CxxExceptionInDestructorTest : public Test {
  public:
   static void TearDownTestCase() {
@@ -162,7 +162,7 @@ class CxxExceptionInSetUpTestCaseTest : public Test {
   CxxExceptionInSetUpTestCaseTest() {
     printf("%s",
            "CxxExceptionInSetUpTestCaseTest constructor "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
   static void SetUpTestCase() {
@@ -172,33 +172,33 @@ class CxxExceptionInSetUpTestCaseTest : public Test {
   static void TearDownTestCase() {
     printf("%s",
            "CxxExceptionInSetUpTestCaseTest::TearDownTestCase() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
  protected:
   ~CxxExceptionInSetUpTestCaseTest() {
     printf("%s",
            "CxxExceptionInSetUpTestCaseTest destructor "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
   virtual void SetUp() {
     printf("%s",
            "CxxExceptionInSetUpTestCaseTest::SetUp() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
   virtual void TearDown() {
     printf("%s",
            "CxxExceptionInSetUpTestCaseTest::TearDown() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 };
 
 TEST_F(CxxExceptionInSetUpTestCaseTest, ThrowsExceptionInSetUpTestCase) {
   printf("%s",
          "CxxExceptionInSetUpTestCaseTest test body "
-             "called as expected.\n");
+         "called as expected.\n");
 }
 
 class CxxExceptionInTearDownTestCaseTest : public Test {
@@ -215,14 +215,14 @@ class CxxExceptionInSetUpTest : public Test {
   static void TearDownTestCase() {
     printf("%s",
            "CxxExceptionInSetUpTest::TearDownTestCase() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
  protected:
   ~CxxExceptionInSetUpTest() {
     printf("%s",
            "CxxExceptionInSetUpTest destructor "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
   virtual void SetUp() { throw std::runtime_error("Standard C++ exception"); }
@@ -230,7 +230,7 @@ class CxxExceptionInSetUpTest : public Test {
   virtual void TearDown() {
     printf("%s",
            "CxxExceptionInSetUpTest::TearDown() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 };
 
@@ -244,14 +244,14 @@ class CxxExceptionInTearDownTest : public Test {
   static void TearDownTestCase() {
     printf("%s",
            "CxxExceptionInTearDownTest::TearDownTestCase() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
  protected:
   ~CxxExceptionInTearDownTest() {
     printf("%s",
            "CxxExceptionInTearDownTest destructor "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
   virtual void TearDown() {
@@ -266,20 +266,20 @@ class CxxExceptionInTestBodyTest : public Test {
   static void TearDownTestCase() {
     printf("%s",
            "CxxExceptionInTestBodyTest::TearDownTestCase() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
  protected:
   ~CxxExceptionInTestBodyTest() {
     printf("%s",
            "CxxExceptionInTestBodyTest destructor "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 
   virtual void TearDown() {
     printf("%s",
            "CxxExceptionInTestBodyTest::TearDown() "
-               "called as expected.\n");
+           "called as expected.\n");
   }
 };
 
@@ -302,7 +302,7 @@ void TerminateHandler() {
 
 #endif  // GTEST_HAS_EXCEPTIONS
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 #if GTEST_HAS_EXCEPTIONS
   std::set_terminate(&TerminateHandler);
 #endif

@@ -43,7 +43,7 @@ using testing::Test;
 // ContainerTest will be instantiated in both gtest-typed-test_test.cc
 // and gtest-typed-test2_test.cc.
 
-template<typename T>
+template <typename T>
 class ContainerTest : public Test {
 };
 

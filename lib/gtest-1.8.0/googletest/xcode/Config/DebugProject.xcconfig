@@ -23,7 +23,7 @@ DEAD_CODE_STRIPPING = NO
 GCC_GENERATE_DEBUGGING_SYMBOLS = YES
 
 // Define the DEBUG macro in all debug builds
-OTHER_CFLAGS = $(OTHER_CFLAGS) - DDEBUG = 1
+OTHER_CFLAGS = $(OTHER_CFLAGS) -DDEBUG=1
 
 // These are turned off to avoid STL incompatibilities with client code
 // // Turns on special C++ STL checks to "encourage" good STL use

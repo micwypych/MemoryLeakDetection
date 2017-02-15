@@ -84,6 +84,7 @@ class QuickTest : public testing::Test {
   time_t start_time_;
 };
 
+
 // We derive a fixture named IntegerFunctionTest from the QuickTest
 // fixture.  All tests using this fixture will be automatically
 // required to be quick.
@@ -133,6 +134,7 @@ TEST_F(IntegerFunctionTest, IsPrime) {
   EXPECT_TRUE(IsPrime(23));
 }
 
+
 // The next test case (named "QueueTest") also needs to be quick, so
 // we derive another fixture from QuickTest.
 //
@@ -174,7 +176,7 @@ TEST_F(QueueTest, DefaultConstructor) {
 
 // Tests Dequeue().
 TEST_F(QueueTest, Dequeue) {
-  int *n = q0_.Dequeue();
+  int* n = q0_.Dequeue();
   EXPECT_TRUE(n == NULL);
 
   n = q1_.Dequeue();

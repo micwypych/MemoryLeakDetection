@@ -50,14 +50,14 @@ using ::testing::Values;
 // instead of reusing them.  In this sample we will define a simple factory
 // function for PrimeTable objects.  We will instantiate objects in test's
 // SetUp() method and delete them in TearDown() method.
-typedef PrimeTable *CreatePrimeTableFunc();
+typedef PrimeTable* CreatePrimeTableFunc();
 
-PrimeTable *CreateOnTheFlyPrimeTable() {
+PrimeTable* CreateOnTheFlyPrimeTable() {
   return new OnTheFlyPrimeTable();
 }
 
-template<size_t max_precalculated>
-PrimeTable *CreatePreCalculatedPrimeTable() {
+template <size_t max_precalculated>
+PrimeTable* CreatePreCalculatedPrimeTable() {
   return new PreCalculatedPrimeTable(max_precalculated);
 }
 
@@ -65,7 +65,7 @@ PrimeTable *CreatePreCalculatedPrimeTable() {
 // can refer to the test parameter by GetParam().  In this case, the test
 // parameter is a factory function which we call in fixture's SetUp() to
 // create and store an instance of PrimeTable.
-class PrimeTableTest : public TestWithParam<CreatePrimeTableFunc *> {
+class PrimeTableTest : public TestWithParam<CreatePrimeTableFunc*> {
  public:
   virtual ~PrimeTableTest() { delete table_; }
   virtual void SetUp() { table_ = (*GetParam())(); }
@@ -75,7 +75,7 @@ class PrimeTableTest : public TestWithParam<CreatePrimeTableFunc *> {
   }
 
  protected:
-  PrimeTable *table_;
+  PrimeTable* table_;
 };
 
 TEST_P(PrimeTableTest, ReturnsFalseForNonPrimes) {

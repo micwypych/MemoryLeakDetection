@@ -105,15 +105,15 @@ class linked_ptr_internal {
   // framework.
 
   // Join an existing circle.
-  void join(linked_ptr_internal const *ptr)
-  GTEST_LOCK_EXCLUDED_(g_linked_ptr_mutex) {
+  void join(linked_ptr_internal const* ptr)
+      GTEST_LOCK_EXCLUDED_(g_linked_ptr_mutex) {
     MutexLock lock(&g_linked_ptr_mutex);
 
-    linked_ptr_internal const *p = ptr;
+    linked_ptr_internal const* p = ptr;
     while (p->next_ != ptr) {
       assert(p->next_ != this &&
-          "Trying to join() a linked ring we are already in. "
-              "Is GMock thread safety enabled?");
+             "Trying to join() a linked ring we are already in. "
+             "Is GMock thread safety enabled?");
       p = p->next_;
     }
     p->next_ = this;
@@ -123,15 +123,15 @@ class linked_ptr_internal {
   // Leave whatever circle we're part of.  Returns true if we were the
   // last member of the circle.  Once this is done, you can join() another.
   bool depart()
-  GTEST_LOCK_EXCLUDED_(g_linked_ptr_mutex) {
+      GTEST_LOCK_EXCLUDED_(g_linked_ptr_mutex) {
     MutexLock lock(&g_linked_ptr_mutex);
 
     if (next_ == this) return true;
-    linked_ptr_internal const *p = next_;
+    linked_ptr_internal const* p = next_;
     while (p->next_ != this) {
       assert(p->next_ != next_ &&
-          "Trying to depart() a linked ring we are not in. "
-              "Is GMock thread safety enabled?");
+             "Trying to depart() a linked ring we are not in. "
+             "Is GMock thread safety enabled?");
       p = p->next_;
     }
     p->next_ = next_;
@@ -139,36 +139,34 @@ class linked_ptr_internal {
   }
 
  private:
-  mutable linked_ptr_internal const *next_;
+  mutable linked_ptr_internal const* next_;
 };
 
-template<typename T>
+template <typename T>
 class linked_ptr {
  public:
   typedef T element_type;
 
   // Take over ownership of a raw pointer.  This should happen as soon as
   // possible after the object is created.
-  explicit linked_ptr(T *ptr = NULL) { capture(ptr); }
+  explicit linked_ptr(T* ptr = NULL) { capture(ptr); }
   ~linked_ptr() { depart(); }
 
   // Copy an existing linked_ptr<>, adding ourselves to the list of references.
-  template<typename U>
-  linked_ptr(linked_ptr<U> const &ptr) { copy(&ptr); }
-  linked_ptr(linked_ptr const &ptr) {  // NOLINT
+  template <typename U> linked_ptr(linked_ptr<U> const& ptr) { copy(&ptr); }
+  linked_ptr(linked_ptr const& ptr) {  // NOLINT
     assert(&ptr != this);
     copy(&ptr);
   }
 
   // Assignment releases the old value and acquires the new.
-  template<typename U>
-  linked_ptr &operator=(linked_ptr<U> const &ptr) {
+  template <typename U> linked_ptr& operator=(linked_ptr<U> const& ptr) {
     depart();
     copy(&ptr);
     return *this;
   }
 
-  linked_ptr &operator=(linked_ptr const &ptr) {
+  linked_ptr& operator=(linked_ptr const& ptr) {
     if (&ptr != this) {
       depart();
       copy(&ptr);
@@ -177,44 +175,42 @@ class linked_ptr {
   }
 
   // Smart pointer members.
-  void reset(T *ptr = NULL) {
+  void reset(T* ptr = NULL) {
     depart();
     capture(ptr);
   }
-  T *get() const { return value_; }
-  T *operator->() const { return value_; }
-  T &operator*() const { return *value_; }
+  T* get() const { return value_; }
+  T* operator->() const { return value_; }
+  T& operator*() const { return *value_; }
 
-  bool operator==(T *p) const { return value_ == p; }
-  bool operator!=(T *p) const { return value_ != p; }
-  template<typename U>
-  bool operator==(linked_ptr<U> const &ptr) const {
+  bool operator==(T* p) const { return value_ == p; }
+  bool operator!=(T* p) const { return value_ != p; }
+  template <typename U>
+  bool operator==(linked_ptr<U> const& ptr) const {
     return value_ == ptr.get();
   }
-  template<typename U>
-  bool operator!=(linked_ptr<U> const &ptr) const {
+  template <typename U>
+  bool operator!=(linked_ptr<U> const& ptr) const {
     return value_ != ptr.get();
   }
 
  private:
-  template<typename U>
-  friend
-  class linked_ptr;
+  template <typename U>
+  friend class linked_ptr;
 
-  T *value_;
+  T* value_;
   linked_ptr_internal link_;
 
   void depart() {
     if (link_.depart()) delete value_;
   }
 
-  void capture(T *ptr) {
+  void capture(T* ptr) {
     value_ = ptr;
     link_.join_new();
   }
 
-  template<typename U>
-  void copy(linked_ptr<U> const *ptr) {
+  template <typename U> void copy(linked_ptr<U> const* ptr) {
     value_ = ptr->get();
     if (value_)
       link_.join(&ptr->link_);
@@ -223,23 +219,21 @@ class linked_ptr {
   }
 };
 
-template<typename T>
-inline
-bool operator==(T *ptr, const linked_ptr<T> &x) {
+template<typename T> inline
+bool operator==(T* ptr, const linked_ptr<T>& x) {
   return ptr == x.get();
 }
 
-template<typename T>
-inline
-bool operator!=(T *ptr, const linked_ptr<T> &x) {
+template<typename T> inline
+bool operator!=(T* ptr, const linked_ptr<T>& x) {
   return ptr != x.get();
 }
 
 // A function to convert T* into linked_ptr<T>
 // Doing e.g. make_linked_ptr(new FooBarBaz<type>(arg)) is a shorter notation
 // for linked_ptr<FooBarBaz<type> >(new FooBarBaz<type>(arg))
-template<typename T>
-linked_ptr<T> make_linked_ptr(T *ptr) {
+template <typename T>
+linked_ptr<T> make_linked_ptr(T* ptr) {
   return linked_ptr<T>(ptr);
 }
 

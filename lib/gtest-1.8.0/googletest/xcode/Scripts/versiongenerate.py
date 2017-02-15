@@ -49,16 +49,16 @@
        AC_INIT, including in comments and character strings.
 """
 
-import re
 import sys
+import re
 
 # Read the command line argument (the output directory for Version.h)
 if (len(sys.argv) < 3):
-    print "Usage: versiongenerate.py input_dir output_dir"
-    sys.exit(1)
+  print "Usage: versiongenerate.py input_dir output_dir"
+  sys.exit(1)
 else:
-    input_dir = sys.argv[1]
-    output_dir = sys.argv[2]
+  input_dir = sys.argv[1]
+  output_dir = sys.argv[2]
 
 # Read the first 1024 characters of the configure.ac file
 config_file = open("%s/configure.ac" % input_dir, 'r')

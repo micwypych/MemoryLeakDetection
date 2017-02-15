@@ -134,8 +134,8 @@ TEST(AnyNumberTest, HasCorrectBounds) {
 
 TEST(AtLeastTest, OnNegativeNumber) {
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            AtLeast(-1);
-                          }, "The invocation lower bound must be >= 0");
+    AtLeast(-1);
+  }, "The invocation lower bound must be >= 0");
 }
 
 TEST(AtLeastTest, OnZero) {
@@ -189,8 +189,8 @@ TEST(AtLeastTest, HasCorrectBounds) {
 
 TEST(AtMostTest, OnNegativeNumber) {
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            AtMost(-1);
-                          }, "The invocation upper bound must be >= 0");
+    AtMost(-1);
+  }, "The invocation upper bound must be >= 0");
 }
 
 TEST(AtMostTest, OnZero) {
@@ -244,21 +244,21 @@ TEST(AtMostTest, HasCorrectBounds) {
 
 TEST(BetweenTest, OnNegativeStart) {
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            Between(-1, 2);
-                          }, "The invocation lower bound must be >= 0, but is actually -1");
+    Between(-1, 2);
+  }, "The invocation lower bound must be >= 0, but is actually -1");
 }
 
 TEST(BetweenTest, OnNegativeEnd) {
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            Between(1, -2);
-                          }, "The invocation upper bound must be >= 0, but is actually -2");
+    Between(1, -2);
+  }, "The invocation upper bound must be >= 0, but is actually -2");
 }
 
 TEST(BetweenTest, OnStartBiggerThanEnd) {
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            Between(2, 1);
-                          }, "The invocation upper bound (1) must be >= "
-                              "the invocation lower bound (2)");
+    Between(2, 1);
+  }, "The invocation upper bound (1) must be >= "
+     "the invocation lower bound (2)");
 }
 
 TEST(BetweenTest, OnZeroStartAndZeroEnd) {
@@ -343,8 +343,8 @@ TEST(BetweenTest, HasCorrectBounds) {
 
 TEST(ExactlyTest, OnNegativeNumber) {
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            Exactly(-1);
-                          }, "The invocation lower bound must be >= 0");
+    Exactly(-1);
+  }, "The invocation lower bound must be >= 0");
 }
 
 TEST(ExactlyTest, OnZero) {
@@ -407,7 +407,7 @@ class EvenCardinality : public CardinalityInterface {
   }
 
   // Describes self to an ostream.
-  virtual void DescribeTo(::std::ostream *ss) const {
+  virtual void DescribeTo(::std::ostream* ss) const {
     *ss << "called even number of times";
   }
 };

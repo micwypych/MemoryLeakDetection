@@ -57,7 +57,7 @@ class MockFoo : public FooInterface {
 };
 
 TEST(LeakTest, LeakedMockWithExpectCallCausesFailureWhenLeakCheckingIsEnabled) {
-  MockFoo *foo = new MockFoo;
+  MockFoo* foo = new MockFoo;
 
   EXPECT_CALL(*foo, DoThis());
   foo->DoThis();
@@ -70,7 +70,7 @@ TEST(LeakTest, LeakedMockWithExpectCallCausesFailureWhenLeakCheckingIsEnabled) {
 }
 
 TEST(LeakTest, LeakedMockWithOnCallCausesFailureWhenLeakCheckingIsEnabled) {
-  MockFoo *foo = new MockFoo;
+  MockFoo* foo = new MockFoo;
 
   ON_CALL(*foo, DoThis()).WillByDefault(Return());
 
@@ -82,8 +82,8 @@ TEST(LeakTest, LeakedMockWithOnCallCausesFailureWhenLeakCheckingIsEnabled) {
 }
 
 TEST(LeakTest, CatchesMultipleLeakedMockObjects) {
-  MockFoo *foo1 = new MockFoo;
-  MockFoo *foo2 = new MockFoo;
+  MockFoo* foo1 = new MockFoo;
+  MockFoo* foo2 = new MockFoo;
 
   ON_CALL(*foo1, DoThis()).WillByDefault(Return());
   EXPECT_CALL(*foo2, DoThis());

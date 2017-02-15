@@ -60,7 +60,7 @@ TEST(CxxExceptionDeathTest, ExceptionIsFailure) {
 
 class TestException : public std::exception {
  public:
-  virtual const char *what() const throw() { return "exceptional message"; }
+  virtual const char* what() const throw() { return "exceptional message"; }
 };
 
 TEST(CxxExceptionDeathTest, PrintsMessageForStdExceptions) {
@@ -86,7 +86,7 @@ TEST(SehExceptionDeasTest, CatchExceptionsDoesNotInterfere) {
 
 #endif  // GTEST_HAS_DEATH_TEST
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   testing::GTEST_FLAG(catch_exceptions) = GTEST_ENABLE_CATCH_EXCEPTIONS_ != 0;
   return RUN_ALL_TESTS();

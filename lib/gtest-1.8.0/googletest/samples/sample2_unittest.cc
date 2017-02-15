@@ -80,7 +80,7 @@ const char kHelloString[] = "Hello, world!";
 TEST(MyString, ConstructorFromCString) {
   const MyString s(kHelloString);
   EXPECT_EQ(0, strcmp(s.c_string(), kHelloString));
-  EXPECT_EQ(sizeof(kHelloString) / sizeof(kHelloString[0]) - 1,
+  EXPECT_EQ(sizeof(kHelloString)/sizeof(kHelloString[0]) - 1,
             s.Length());
 }
 

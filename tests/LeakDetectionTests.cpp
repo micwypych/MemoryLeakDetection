@@ -74,7 +74,7 @@ TEST_F(LeakDetectionTests,
   ASSERT_EQ(expected_message(xyz, sizeof(char *)), issues[2]);
   delete[] pointer;
   delete str;
-  delete xyz;
+  delete reinterpret_cast<char*>(xyz);
 }
 
 TEST_F(LeakDetectionTests,

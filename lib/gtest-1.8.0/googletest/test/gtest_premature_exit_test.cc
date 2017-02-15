@@ -47,7 +47,7 @@ namespace {
 class PrematureExitTest : public Test {
  public:
   // Returns true iff the given file exists.
-  static bool FileExists(const char *filepath) {
+  static bool FileExists(const char* filepath) {
     StatStruct stat;
     return Stat(filepath, &stat) == 0;
   }
@@ -67,7 +67,7 @@ class PrematureExitTest : public Test {
     return FileExists(premature_exit_file_path_);
   }
 
-  const char *premature_exit_file_path_;
+  const char* premature_exit_file_path_;
 };
 
 typedef PrematureExitTest PrematureExitDeathTest;
@@ -83,14 +83,14 @@ TEST_F(PrematureExitDeathTest, FileExistsDuringExecutionOfDeathTest) {
   }
 
   EXPECT_DEATH_IF_SUPPORTED({
-                              // If the file exists, crash the process such that the main test
-                              // process will catch the (expected) crash and report a success;
-                              // otherwise don't crash, which will cause the main test process
-                              // to report that the death test has failed.
-                              if (PrematureExitFileExists()) {
-                                exit(1);
-                              }
-                            }, "");
+      // If the file exists, crash the process such that the main test
+      // process will catch the (expected) crash and report a success;
+      // otherwise don't crash, which will cause the main test process
+      // to report that the death test has failed.
+      if (PrematureExitFileExists()) {
+        exit(1);
+      }
+    }, "");
 }
 
 // Tests that the premature-exit file exists during the execution of a
@@ -101,8 +101,8 @@ TEST_F(PrematureExitTest, PrematureExitFileExistsDuringTestExecution) {
   }
 
   EXPECT_TRUE(PrematureExitFileExists())
-            << " file " << premature_exit_file_path_
-            << " should exist during test execution, but doesn't.";
+      << " file " << premature_exit_file_path_
+      << " should exist during test execution, but doesn't.";
 }
 
 }  // namespace
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 
   // Test that the premature-exit file is deleted upon return from
   // RUN_ALL_TESTS().
-  const char *const filepath = GetEnv("TEST_PREMATURE_EXIT_FILE");
+  const char* const filepath = GetEnv("TEST_PREMATURE_EXIT_FILE");
   if (filepath != NULL && *filepath != '\0') {
     if (PrematureExitTest::FileExists(filepath)) {
       printf(

@@ -52,7 +52,7 @@ class HybridPrimeTable : public PrimeTable {
   HybridPrimeTable(bool force_on_the_fly, int max_precalculated)
       : on_the_fly_impl_(new OnTheFlyPrimeTable),
         precalc_impl_(force_on_the_fly ? NULL :
-                      new PreCalculatedPrimeTable(max_precalculated)),
+                          new PreCalculatedPrimeTable(max_precalculated)),
         max_precalculated_(max_precalculated) {}
   virtual ~HybridPrimeTable() {
     delete on_the_fly_impl_;
@@ -75,8 +75,8 @@ class HybridPrimeTable : public PrimeTable {
   }
 
  private:
-  OnTheFlyPrimeTable *on_the_fly_impl_;
-  PreCalculatedPrimeTable *precalc_impl_;
+  OnTheFlyPrimeTable* on_the_fly_impl_;
+  PreCalculatedPrimeTable* precalc_impl_;
   int max_precalculated_;
 };
 
@@ -90,7 +90,7 @@ using ::testing::Combine;
 // PreCalculatedPrimeTable disabled. We do this by defining fixture which will
 // accept different combinations of parameters for instantiating a
 // HybridPrimeTable instance.
-class PrimeTableTest : public TestWithParam<::testing::tuple<bool, int> > {
+class PrimeTableTest : public TestWithParam< ::testing::tuple<bool, int> > {
  protected:
   virtual void SetUp() {
     // This can be written as
@@ -109,7 +109,7 @@ class PrimeTableTest : public TestWithParam<::testing::tuple<bool, int> > {
     delete table_;
     table_ = NULL;
   }
-  HybridPrimeTable *table_;
+  HybridPrimeTable* table_;
 };
 
 TEST_P(PrimeTableTest, ReturnsFalseForNonPrimes) {

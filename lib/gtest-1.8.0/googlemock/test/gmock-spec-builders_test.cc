@@ -52,7 +52,7 @@ namespace internal {
 class ExpectationTester {
  public:
   // Sets the call count of the given expectation to the given number.
-  void SetCallCount(int n, ExpectationBase *exp) {
+  void SetCallCount(int n, ExpectationBase* exp) {
     exp->call_count_ = n;
   }
 };
@@ -111,12 +111,11 @@ class MockIncomplete {
  public:
   // This line verifies that a mock method can take a by-reference
   // argument of an incomplete type.
-  MOCK_METHOD1(ByRefFunc, void(
-      const Incomplete &x));
+  MOCK_METHOD1(ByRefFunc, void(const Incomplete& x));
 };
 
 // Tells Google Mock how to print a value of type Incomplete.
-void PrintTo(const Incomplete &x, ::std::ostream *os);
+void PrintTo(const Incomplete& x, ::std::ostream* os);
 
 TEST(MockMethodTest, CanInstantiateWithIncompleteArgType) {
   // Even though this mock class contains a mock method that takes
@@ -130,7 +129,7 @@ TEST(MockMethodTest, CanInstantiateWithIncompleteArgType) {
 
 // The definition of the printer for the argument type doesn't have to
 // be visible where the mock is used.
-void PrintTo(const Incomplete & /* x */, ::std::ostream *os) {
+void PrintTo(const Incomplete& /* x */, ::std::ostream* os) {
   *os << "incomplete";
 }
 
@@ -146,17 +145,11 @@ class MockA {
  public:
   MockA() {}
 
-  MOCK_METHOD1(DoA, void(int
-      n));
-  MOCK_METHOD1(ReturnResult, Result(int
-      n));
+  MOCK_METHOD1(DoA, void(int n));
+  MOCK_METHOD1(ReturnResult, Result(int n));
   MOCK_METHOD0(ReturnNonDefaultConstructible, NonDefaultConstructible());
-  MOCK_METHOD2(Binary, bool(int
-      x, int
-      y));
-  MOCK_METHOD2(ReturnInt, int(int
-      x, int
-      y));
+  MOCK_METHOD2(Binary, bool(int x, int y));
+  MOCK_METHOD2(ReturnInt, int(int x, int y));
 
  private:
   GTEST_DISALLOW_COPY_AND_ASSIGN_(MockA);
@@ -167,8 +160,7 @@ class MockB {
   MockB() {}
 
   MOCK_CONST_METHOD0(DoB, int());  // NOLINT
-  MOCK_METHOD1(DoB, int(int
-      n));  // NOLINT
+  MOCK_METHOD1(DoB, int(int n));  // NOLINT
 
  private:
   GTEST_DISALLOW_COPY_AND_ASSIGN_(MockB);
@@ -178,8 +170,7 @@ class ReferenceHoldingMock {
  public:
   ReferenceHoldingMock() {}
 
-  MOCK_METHOD1(AcceptReference, void(linked_ptr<MockA>
-      *));
+  MOCK_METHOD1(AcceptReference, void(linked_ptr<MockA>*));
 
  private:
   GTEST_DISALLOW_COPY_AND_ASSIGN_(ReferenceHoldingMock);
@@ -241,7 +232,7 @@ TEST(ExpectCallSyntaxTest, WorksWithMethodNameExpandedFromMacro) {
 // by Google Mock.
 TEST(OnCallSyntaxTest, EvaluatesFirstArgumentOnce) {
   MockA a;
-  MockA *pa = &a;
+  MockA* pa = &a;
 
   ON_CALL(*pa++, DoA(_));
   EXPECT_EQ(&a + 1, pa);
@@ -271,37 +262,37 @@ TEST(OnCallSyntaxTest, WithCanAppearAtMostOnce) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            ON_CALL(a, ReturnResult(_))
-                                .With(_)
-                                .With(_)
-                                .WillByDefault(Return(Result()));
-                          }, ".With() cannot appear more than once in an ON_CALL()");
+    ON_CALL(a, ReturnResult(_))
+        .With(_)
+        .With(_)
+        .WillByDefault(Return(Result()));
+  }, ".With() cannot appear more than once in an ON_CALL()");
 }
 
 TEST(OnCallSyntaxTest, WillByDefaultIsMandatory) {
   MockA a;
 
   EXPECT_DEATH_IF_SUPPORTED({
-                              ON_CALL(a, DoA(5));
-                              a.DoA(5);
-                            }, "");
+    ON_CALL(a, DoA(5));
+    a.DoA(5);
+  }, "");
 }
 
 TEST(OnCallSyntaxTest, WillByDefaultCanAppearAtMostOnce) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            ON_CALL(a, DoA(5))
-                                .WillByDefault(Return())
-                                .WillByDefault(Return());
-                          }, ".WillByDefault() must appear exactly once in an ON_CALL()");
+    ON_CALL(a, DoA(5))
+        .WillByDefault(Return())
+        .WillByDefault(Return());
+  }, ".WillByDefault() must appear exactly once in an ON_CALL()");
 }
 
 // Tests that EXPECT_CALL evaluates its arguments exactly once as
 // promised by Google Mock.
 TEST(ExpectCallSyntaxTest, EvaluatesFirstArgumentOnce) {
   MockA a;
-  MockA *pa = &a;
+  MockA* pa = &a;
 
   EXPECT_CALL(*pa++, DoA(_));
   a.DoA(0);
@@ -333,10 +324,10 @@ TEST(ExpectCallSyntaxTest, WithCanAppearAtMostOnce) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(6))
-                                .With(_)
-                                .With(_);
-                          }, ".With() cannot appear more than once in an EXPECT_CALL()");
+    EXPECT_CALL(a, DoA(6))
+        .With(_)
+        .With(_);
+  }, ".With() cannot appear more than once in an EXPECT_CALL()");
 
   a.DoA(6);
 }
@@ -345,18 +336,18 @@ TEST(ExpectCallSyntaxTest, WithMustBeFirstClause) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(1))
-                                .Times(1)
-                                .With(_);
-                          }, ".With() must be the first clause in an EXPECT_CALL()");
+    EXPECT_CALL(a, DoA(1))
+        .Times(1)
+        .With(_);
+  }, ".With() must be the first clause in an EXPECT_CALL()");
 
   a.DoA(1);
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(2))
-                                .WillOnce(Return())
-                                .With(_);
-                          }, ".With() must be the first clause in an EXPECT_CALL()");
+    EXPECT_CALL(a, DoA(2))
+        .WillOnce(Return())
+        .With(_);
+  }, ".With() must be the first clause in an EXPECT_CALL()");
 
   a.DoA(2);
 }
@@ -380,10 +371,10 @@ TEST(ExpectCallSyntaxTest, TimesCanAppearAtMostOnce) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(1))
-                                .Times(1)
-                                .Times(2);
-                          }, ".Times() cannot appear more than once in an EXPECT_CALL()");
+    EXPECT_CALL(a, DoA(1))
+        .Times(1)
+        .Times(2);
+  }, ".Times() cannot appear more than once in an EXPECT_CALL()");
 
   a.DoA(1);
   a.DoA(1);
@@ -394,10 +385,10 @@ TEST(ExpectCallSyntaxTest, TimesMustBeBeforeInSequence) {
   Sequence s;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(1))
-                                .InSequence(s)
-                                .Times(1);
-                          }, ".Times() cannot appear after ");
+    EXPECT_CALL(a, DoA(1))
+        .InSequence(s)
+        .Times(1);
+  }, ".Times() cannot appear after ");
 
   a.DoA(1);
 }
@@ -432,10 +423,10 @@ TEST(ExpectCallSyntaxTest, InSequenceMustBeBeforeAfter) {
   Expectation e = EXPECT_CALL(a, DoA(1))
       .Times(AnyNumber());
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(2))
-                                .After(e)
-                                .InSequence(s);
-                          }, ".InSequence() cannot appear after ");
+    EXPECT_CALL(a, DoA(2))
+        .After(e)
+        .InSequence(s);
+  }, ".InSequence() cannot appear after ");
 
   a.DoA(2);
 }
@@ -445,10 +436,10 @@ TEST(ExpectCallSyntaxTest, InSequenceMustBeBeforeWillOnce) {
   Sequence s;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(1))
-                                .WillOnce(Return())
-                                .InSequence(s);
-                          }, ".InSequence() cannot appear after ");
+    EXPECT_CALL(a, DoA(1))
+        .WillOnce(Return())
+        .InSequence(s);
+  }, ".InSequence() cannot appear after ");
 
   a.DoA(1);
 }
@@ -458,10 +449,10 @@ TEST(ExpectCallSyntaxTest, AfterMustBeBeforeWillOnce) {
 
   Expectation e = EXPECT_CALL(a, DoA(1));
   EXPECT_NONFATAL_FAILURE({
-                            EXPECT_CALL(a, DoA(2))
-                                .WillOnce(Return())
-                                .After(e);
-                          }, ".After() cannot appear after ");
+    EXPECT_CALL(a, DoA(2))
+        .WillOnce(Return())
+        .After(e);
+  }, ".After() cannot appear after ");
 
   a.DoA(1);
   a.DoA(2);
@@ -492,10 +483,10 @@ TEST(ExpectCallSyntaxTest, WillMustBeBeforeWillRepeatedly) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(1))
-                                .WillRepeatedly(Return())
-                                .WillOnce(Return());
-                          }, ".WillOnce() cannot appear after ");
+    EXPECT_CALL(a, DoA(1))
+        .WillRepeatedly(Return())
+        .WillOnce(Return());
+  }, ".WillOnce() cannot appear after ");
 
   a.DoA(1);
 }
@@ -518,21 +509,21 @@ TEST(ExpectCallSyntaxTest, WillRepeatedlyCannotAppearMultipleTimes) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(1))
-                                .WillRepeatedly(Return())
-                                .WillRepeatedly(Return());
-                          }, ".WillRepeatedly() cannot appear more than once in an "
-                              "EXPECT_CALL()");
+    EXPECT_CALL(a, DoA(1))
+        .WillRepeatedly(Return())
+        .WillRepeatedly(Return());
+  }, ".WillRepeatedly() cannot appear more than once in an "
+     "EXPECT_CALL()");
 }
 
 TEST(ExpectCallSyntaxTest, WillRepeatedlyMustBeBeforeRetiresOnSaturation) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(1))
-                                .RetiresOnSaturation()
-                                .WillRepeatedly(Return());
-                          }, ".WillRepeatedly() cannot appear after ");
+    EXPECT_CALL(a, DoA(1))
+        .RetiresOnSaturation()
+        .WillRepeatedly(Return());
+  }, ".WillRepeatedly() cannot appear after ");
 }
 
 TEST(ExpectCallSyntaxTest, RetiresOnSaturationIsOptional) {
@@ -550,10 +541,10 @@ TEST(ExpectCallSyntaxTest, RetiresOnSaturationCannotAppearMultipleTimes) {
   MockA a;
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            EXPECT_CALL(a, DoA(1))
-                                .RetiresOnSaturation()
-                                .RetiresOnSaturation();
-                          }, ".RetiresOnSaturation() cannot appear more than once");
+    EXPECT_CALL(a, DoA(1))
+        .RetiresOnSaturation()
+        .RetiresOnSaturation();
+  }, ".RetiresOnSaturation() cannot appear more than once");
 
   a.DoA(1);
 }
@@ -565,15 +556,15 @@ TEST(ExpectCallSyntaxTest, DefaultCardinalityIsOnce) {
     a.DoA(1);
   }
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            MockA a;
-                            EXPECT_CALL(a, DoA(1));
-                          }, "to be called once");
+    MockA a;
+    EXPECT_CALL(a, DoA(1));
+  }, "to be called once");
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            MockA a;
-                            EXPECT_CALL(a, DoA(1));
-                            a.DoA(1);
-                            a.DoA(1);
-                          }, "to be called once");
+    MockA a;
+    EXPECT_CALL(a, DoA(1));
+    a.DoA(1);
+    a.DoA(1);
+  }, "to be called once");
 }
 
 #if GTEST_HAS_STREAM_REDIRECTION
@@ -653,30 +644,30 @@ TEST(ExpectCallSyntaxTest, WarnsOnTooManyActions) {
   EXPECT_PRED_FORMAT2(
       IsSubstring,
       "Too many actions specified in EXPECT_CALL(b, DoB())...\n"
-          "Expected to be never called, but has 1 WillOnce().",
+      "Expected to be never called, but has 1 WillOnce().",
       output);  // #1
   EXPECT_PRED_FORMAT2(
       IsSubstring,
       "Too many actions specified in EXPECT_CALL(b, DoB())...\n"
-          "Expected to be called at most once, "
-          "but has 2 WillOnce()s.",
+      "Expected to be called at most once, "
+      "but has 2 WillOnce()s.",
       output);  // #2
   EXPECT_PRED_FORMAT2(
       IsSubstring,
       "Too many actions specified in EXPECT_CALL(b, DoB(1))...\n"
-          "Expected to be called once, but has 2 WillOnce()s.",
+      "Expected to be called once, but has 2 WillOnce()s.",
       output);  // #3
   EXPECT_PRED_FORMAT2(
       IsSubstring,
       "Too many actions specified in EXPECT_CALL(b, DoB())...\n"
-          "Expected to be never called, but has 0 WillOnce()s "
-          "and a WillRepeatedly().",
+      "Expected to be never called, but has 0 WillOnce()s "
+      "and a WillRepeatedly().",
       output);  // #4
   EXPECT_PRED_FORMAT2(
       IsSubstring,
       "Too many actions specified in EXPECT_CALL(b, DoB(2))...\n"
-          "Expected to be called once, but has 1 WillOnce() "
-          "and a WillRepeatedly().",
+      "Expected to be called once, but has 1 WillOnce() "
+      "and a WillRepeatedly().",
       output);  // #5
 }
 
@@ -695,8 +686,8 @@ TEST(ExpectCallSyntaxTest, WarnsOnTooFewActions) {
   EXPECT_PRED_FORMAT2(
       IsSubstring,
       "Too few actions specified in EXPECT_CALL(b, DoB())...\n"
-          "Expected to be called between 2 and 3 times, "
-          "but has only 1 WillOnce().",
+      "Expected to be called between 2 and 3 times, "
+      "but has only 1 WillOnce().",
       output);
   b.DoB();
 }
@@ -768,14 +759,14 @@ TEST(ExpectCallTest, PicksLastMatchingExpectCall) {
 // Tests lower-bound violation.
 TEST(ExpectCallTest, CatchesTooFewCalls) {
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            MockB b;
-                            EXPECT_CALL(b, DoB(5))
-                                .Times(AtLeast(2));
+    MockB b;
+    EXPECT_CALL(b, DoB(5))
+        .Times(AtLeast(2));
 
-                            b.DoB(5);
-                          }, "Actual function call count doesn't match EXPECT_CALL(b, DoB(5))...\n"
-                              "         Expected: to be called at least twice\n"
-                              "           Actual: called once - unsatisfied and active");
+    b.DoB(5);
+  }, "Actual function call count doesn't match EXPECT_CALL(b, DoB(5))...\n"
+     "         Expected: to be called at least twice\n"
+     "           Actual: called once - unsatisfied and active");
 }
 
 // Tests that the cardinality can be inferred when no Times(...) is
@@ -792,13 +783,13 @@ TEST(ExpectCallTest, InfersCardinalityWhenThereIsNoWillRepeatedly) {
   }
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            MockB b;
-                            EXPECT_CALL(b, DoB())
-                                .WillOnce(Return(1))
-                                .WillOnce(Return(2));
+    MockB b;
+    EXPECT_CALL(b, DoB())
+        .WillOnce(Return(1))
+        .WillOnce(Return(2));
 
-                            EXPECT_EQ(1, b.DoB());
-                          }, "to be called twice");
+    EXPECT_EQ(1, b.DoB());
+  }, "to be called twice");
 
   {  // NOLINT
     MockB b;
@@ -834,11 +825,11 @@ TEST(ExpectCallTest, InfersCardinality1WhenThereIsWillRepeatedly) {
   }
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            MockB b;
-                            EXPECT_CALL(b, DoB())
-                                .WillOnce(Return(1))
-                                .WillRepeatedly(Return(2));
-                          }, "to be called at least once");
+    MockB b;
+    EXPECT_CALL(b, DoB())
+        .WillOnce(Return(1))
+        .WillRepeatedly(Return(2));
+  }, "to be called at least once");
 }
 
 // Tests that the n-th action is taken for the n-th matching
@@ -883,7 +874,7 @@ TEST(ExpectCallTest, TakesDefaultActionWhenWillListIsExhausted) {
 
   CaptureStdout();
   EXPECT_EQ(0, b.DoB(1));  // Shouldn't generate a warning as the
-  // expectation has no action clause at all.
+                           // expectation has no action clause at all.
   EXPECT_EQ(1, b.DoB());
   EXPECT_EQ(2, b.DoB());
   const std::string output1 = GetCapturedStdout();
@@ -895,12 +886,12 @@ TEST(ExpectCallTest, TakesDefaultActionWhenWillListIsExhausted) {
   const std::string output2 = GetCapturedStdout();
   EXPECT_THAT(output2.c_str(),
               HasSubstr("Actions ran out in EXPECT_CALL(b, DoB())...\n"
-                            "Called 3 times, but only 2 WillOnce()s are specified"
-                            " - returning default value."));
+                        "Called 3 times, but only 2 WillOnce()s are specified"
+                        " - returning default value."));
   EXPECT_THAT(output2.c_str(),
               HasSubstr("Actions ran out in EXPECT_CALL(b, DoB())...\n"
-                            "Called 4 times, but only 2 WillOnce()s are specified"
-                            " - returning default value."));
+                        "Called 4 times, but only 2 WillOnce()s are specified"
+                        " - returning default value."));
 }
 
 TEST(FunctionMockerMessageTest, ReportsExpectCallLocationForExhausedActions) {
@@ -985,14 +976,14 @@ TEST(UnexpectedCallTest, GeneratesFailureForVoidFunction) {
   EXPECT_NONFATAL_FAILURE(
       a1.DoA(9),
       "Unexpected mock function call - returning directly.\n"
-          "    Function call: DoA(9)\n"
-          "Google Mock tried the following 1 expectation, but it didn't match:");
+      "    Function call: DoA(9)\n"
+      "Google Mock tried the following 1 expectation, but it didn't match:");
   EXPECT_NONFATAL_FAILURE(
       a1.DoA(9),
       "  Expected arg #0: is equal to 1\n"
-          "           Actual: 9\n"
-          "         Expected: to be called once\n"
-          "           Actual: called once - saturated and active");
+      "           Actual: 9\n"
+      "         Expected: to be called once\n"
+      "           Actual: called once - saturated and active");
 
   // Next, tests the message when there are more than one EXPECT_CALL().
   MockA a2;
@@ -1002,22 +993,22 @@ TEST(UnexpectedCallTest, GeneratesFailureForVoidFunction) {
   EXPECT_NONFATAL_FAILURE(
       a2.DoA(2),
       "Unexpected mock function call - returning directly.\n"
-          "    Function call: DoA(2)\n"
-          "Google Mock tried the following 2 expectations, but none matched:");
+      "    Function call: DoA(2)\n"
+      "Google Mock tried the following 2 expectations, but none matched:");
   EXPECT_NONFATAL_FAILURE(
       a2.DoA(2),
       "tried expectation #0: EXPECT_CALL(a2, DoA(1))...\n"
-          "  Expected arg #0: is equal to 1\n"
-          "           Actual: 2\n"
-          "         Expected: to be called once\n"
-          "           Actual: called once - saturated and active");
+      "  Expected arg #0: is equal to 1\n"
+      "           Actual: 2\n"
+      "         Expected: to be called once\n"
+      "           Actual: called once - saturated and active");
   EXPECT_NONFATAL_FAILURE(
       a2.DoA(2),
       "tried expectation #1: EXPECT_CALL(a2, DoA(3))...\n"
-          "  Expected arg #0: is equal to 3\n"
-          "           Actual: 2\n"
-          "         Expected: to be called once\n"
-          "           Actual: never called - unsatisfied and active");
+      "  Expected arg #0: is equal to 3\n"
+      "           Actual: 2\n"
+      "         Expected: to be called once\n"
+      "           Actual: never called - unsatisfied and active");
   a2.DoA(3);
 }
 
@@ -1030,15 +1021,15 @@ TEST(UnexpectedCallTest, GeneartesFailureForNonVoidFunction) {
   EXPECT_NONFATAL_FAILURE(
       b1.DoB(2),
       "Unexpected mock function call - returning default value.\n"
-          "    Function call: DoB(2)\n"
-          "          Returns: 0\n"
-          "Google Mock tried the following 1 expectation, but it didn't match:");
+      "    Function call: DoB(2)\n"
+      "          Returns: 0\n"
+      "Google Mock tried the following 1 expectation, but it didn't match:");
   EXPECT_NONFATAL_FAILURE(
       b1.DoB(2),
       "  Expected arg #0: is equal to 1\n"
-          "           Actual: 2\n"
-          "         Expected: to be called once\n"
-          "           Actual: called once - saturated and active");
+      "           Actual: 2\n"
+      "         Expected: to be called once\n"
+      "           Actual: called once - saturated and active");
 }
 
 // Tests that Google Mock explains that an retired expectation doesn't
@@ -1052,7 +1043,7 @@ TEST(UnexpectedCallTest, RetiredExpectation) {
   EXPECT_NONFATAL_FAILURE(
       b.DoB(1),
       "         Expected: the expectation is active\n"
-          "           Actual: it is retired");
+      "           Actual: it is retired");
 }
 
 // Tests that Google Mock explains that an expectation that doesn't
@@ -1064,7 +1055,7 @@ TEST(UnexpectedCallTest, UnmatchedArguments) {
   EXPECT_NONFATAL_FAILURE(
       b.DoB(2),
       "  Expected arg #0: is equal to 1\n"
-          "           Actual: 2\n");
+      "           Actual: 2\n");
   b.DoB(1);
 }
 
@@ -1093,7 +1084,7 @@ TEST(UnexpectedCallTest, UnsatisifiedPrerequisites) {
 
   // There should be one non-fatal failure.
   ASSERT_EQ(1, failures.size());
-  const ::testing::TestPartResult &r = failures.GetTestPartResult(0);
+  const ::testing::TestPartResult& r = failures.GetTestPartResult(0);
   EXPECT_EQ(::testing::TestPartResult::kNonFatalFailure, r.type());
 
   // Verifies that the failure message contains the two unsatisfied
@@ -1110,8 +1101,8 @@ TEST(UnexpectedCallTest, UnsatisifiedPrerequisites) {
       // POSIX RE doesn't understand the (?s) prefix, but has no trouble
       // with (.|\n).
       "the following immediate pre-requisites are not satisfied:\n"
-          "(.|\n)*: pre-requisite #0\n"
-          "(.|\n)*: pre-requisite #1"));
+      "(.|\n)*: pre-requisite #0\n"
+      "(.|\n)*: pre-requisite #1"));
 #else
   // We can only use Google Test's own simple regex.
   EXPECT_THAT(r.message(), ContainsRegex(
@@ -1173,9 +1164,9 @@ TEST(ExcessiveCallTest, GeneratesFailureForVoidFunction) {
   EXPECT_NONFATAL_FAILURE(
       a.DoA(9),
       "Mock function called more times than expected - returning directly.\n"
-          "    Function call: DoA(9)\n"
-          "         Expected: to be never called\n"
-          "           Actual: called once - over-saturated and active");
+      "    Function call: DoA(9)\n"
+      "         Expected: to be never called\n"
+      "           Actual: called once - over-saturated and active");
 }
 
 // Tests that when a non-void function is called too many times, the
@@ -1187,11 +1178,11 @@ TEST(ExcessiveCallTest, GeneratesFailureForNonVoidFunction) {
   EXPECT_NONFATAL_FAILURE(
       b.DoB(2),
       "Mock function called more times than expected - "
-          "returning default value.\n"
-          "    Function call: DoB(2)\n"
-          "          Returns: 0\n"
-          "         Expected: to be called once\n"
-          "           Actual: called twice - over-saturated and active");
+      "returning default value.\n"
+      "    Function call: DoB(2)\n"
+      "          Returns: 0\n"
+      "         Expected: to be called once\n"
+      "           Actual: called twice - over-saturated and active");
 }
 
 // Tests using sequences.
@@ -1206,8 +1197,8 @@ TEST(InSequenceTest, AllExpectationInScopeAreInSequence) {
   }
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            a.DoA(2);
-                          }, "Unexpected mock function call");
+    a.DoA(2);
+  }, "Unexpected mock function call");
 
   a.DoA(1);
   a.DoA(2);
@@ -1228,9 +1219,9 @@ TEST(InSequenceTest, NestedInSequence) {
   }
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            a.DoA(1);
-                            a.DoA(3);
-                          }, "Unexpected mock function call");
+    a.DoA(1);
+    a.DoA(3);
+  }, "Unexpected mock function call");
 
   a.DoA(2);
   a.DoA(3);
@@ -1247,8 +1238,8 @@ TEST(InSequenceTest, ExpectationsOutOfScopeAreNotAffected) {
   EXPECT_CALL(a, DoA(3));
 
   EXPECT_NONFATAL_FAILURE({  // NOLINT
-                            a.DoA(2);
-                          }, "Unexpected mock function call");
+    a.DoA(2);
+  }, "Unexpected mock function call");
 
   a.DoA(3);
   a.DoA(1);
@@ -1548,7 +1539,7 @@ TEST(ExpectationSetTest, IsEnumerable) {
   EXPECT_TRUE(it != es.end());
   EXPECT_THAT(*it, Eq(Expectation()));
   ++it;
-  EXPECT_TRUE(it == es.end());
+  EXPECT_TRUE(it== es.end());
 }
 
 // Tests the .After() clause.
@@ -1773,9 +1764,9 @@ TEST(AfterTest, ChangesToExpectationSetHaveNoEffectAfterwards) {
 
 // Tests that calls that satisfy the original spec are successful.
 TEST(DeletingMockEarlyTest, Success1) {
-  MockB *const b1 = new MockB;
-  MockA *const a = new MockA;
-  MockB *const b2 = new MockB;
+  MockB* const b1 = new MockB;
+  MockA* const a = new MockA;
+  MockB* const b2 = new MockB;
 
   {
     InSequence dummy;
@@ -1801,9 +1792,9 @@ TEST(DeletingMockEarlyTest, Success1) {
 
 // Tests that calls that satisfy the original spec are successful.
 TEST(DeletingMockEarlyTest, Success2) {
-  MockB *const b1 = new MockB;
-  MockA *const a = new MockA;
-  MockB *const b2 = new MockB;
+  MockB* const b1 = new MockB;
+  MockA* const a = new MockA;
+  MockB* const b2 = new MockB;
 
   {
     InSequence dummy;
@@ -1839,13 +1830,13 @@ ACTION_P(Delete, ptr) { delete ptr; }
 #endif
 
 TEST(DeletingMockEarlyTest, CanDeleteSelfInActionReturningVoid) {
-  MockA *const a = new MockA;
+  MockA* const a = new MockA;
   EXPECT_CALL(*a, DoA(_)).WillOnce(Delete(a));
   a->DoA(42);  // This will cause a to be deleted.
 }
 
 TEST(DeletingMockEarlyTest, CanDeleteSelfInActionReturningValue) {
-  MockA *const a = new MockA;
+  MockA* const a = new MockA;
   EXPECT_CALL(*a, ReturnResult(_))
       .WillOnce(DoAll(Delete(a), Return(Result())));
   a->ReturnResult(42);  // This will cause a to be deleted.
@@ -1853,9 +1844,9 @@ TEST(DeletingMockEarlyTest, CanDeleteSelfInActionReturningValue) {
 
 // Tests that calls that violate the original spec yield failures.
 TEST(DeletingMockEarlyTest, Failure1) {
-  MockB *const b1 = new MockB;
-  MockA *const a = new MockA;
-  MockB *const b2 = new MockB;
+  MockB* const b1 = new MockB;
+  MockA* const a = new MockA;
+  MockB* const b2 = new MockB;
 
   {
     InSequence dummy;
@@ -1870,8 +1861,8 @@ TEST(DeletingMockEarlyTest, Failure1) {
 
   delete a;  // a is trivially satisfied.
   EXPECT_NONFATAL_FAILURE({
-                            b2->DoB(2);
-                          }, "Unexpected mock function call");
+    b2->DoB(2);
+  }, "Unexpected mock function call");
   EXPECT_EQ(1, b1->DoB(1));
   delete b1;
   delete b2;
@@ -1879,9 +1870,9 @@ TEST(DeletingMockEarlyTest, Failure1) {
 
 // Tests that calls that violate the original spec yield failures.
 TEST(DeletingMockEarlyTest, Failure2) {
-  MockB *const b1 = new MockB;
-  MockA *const a = new MockA;
-  MockB *const b2 = new MockB;
+  MockB* const b1 = new MockB;
+  MockA* const a = new MockA;
+  MockB* const b2 = new MockB;
 
   {
     InSequence dummy;
@@ -1915,7 +1906,7 @@ class EvenNumberCardinality : public CardinalityInterface {
   }
 
   // Describes self to an ostream.
-  virtual void DescribeTo(::std::ostream *os) const {
+  virtual void DescribeTo(::std::ostream* os) const {
     *os << "called even number of times";
   }
 };
@@ -1926,7 +1917,7 @@ Cardinality EvenNumber() {
 
 TEST(ExpectationBaseTest,
      AllPrerequisitesAreSatisfiedWorksForNonMonotonicCardinality) {
-  MockA *a = new MockA;
+  MockA* a = new MockA;
   Sequence s;
 
   EXPECT_CALL(*a, DoA(1))
@@ -1950,7 +1941,7 @@ TEST(ExpectationBaseTest,
 struct Printable {
 };
 
-inline void operator<<(::std::ostream &os, const Printable &) {
+inline void operator<<(::std::ostream& os, const Printable&) {
   os << "Printable";
 }
 
@@ -1963,12 +1954,8 @@ class MockC {
  public:
   MockC() {}
 
-  MOCK_METHOD6(VoidMethod, void(bool
-      cond, int
-      n, string
-      s, void * p,
-      const Printable &x, Unprintable
-      y));
+  MOCK_METHOD6(VoidMethod, void(bool cond, int n, string s, void* p,
+                                const Printable& x, Unprintable y));
   MOCK_METHOD0(NonVoidMethod, int());  // NOLINT
 
  private:
@@ -2048,8 +2035,8 @@ TEST(FunctionCallMessageTest,
   EXPECT_PRED_FORMAT2(
       IsSubstring,
       "Uninteresting mock function call - returning default value.\n"
-          "    Function call: DoB()\n"
-          "          Returns: 0\n", output1.c_str());
+      "    Function call: DoB()\n"
+      "          Returns: 0\n", output1.c_str());
   // Makes sure the return value is printed.
 
   // A void mock function.
@@ -2060,9 +2047,9 @@ TEST(FunctionCallMessageTest,
   EXPECT_THAT(output2.c_str(),
               ContainsRegex(
                   "Uninteresting mock function call - returning directly\\.\n"
-                      "    Function call: VoidMethod"
-                      "\\(false, 5, \"Hi\", NULL, @.+ "
-                      "Printable, 4-byte object <00-00 00-00>\\)"));
+                  "    Function call: VoidMethod"
+                  "\\(false, 5, \"Hi\", NULL, @.+ "
+                  "Printable, 4-byte object <00-00 00-00>\\)"));
   // A void function has no return value to print.
 }
 
@@ -2074,9 +2061,9 @@ class GMockVerboseFlagTest : public VerboseFlagPreservingFixture {
   // should_print is true, the output should match the given regex and
   // contain the given function name in the stack trace.  When it's
   // false, the output should be empty.)
-  void VerifyOutput(const std::string &output, bool should_print,
-                    const string &expected_substring,
-                    const string &function_name) {
+  void VerifyOutput(const std::string& output, bool should_print,
+                    const string& expected_substring,
+                    const string& function_name) {
     if (should_print) {
       EXPECT_THAT(output.c_str(), HasSubstr(expected_substring));
 # ifndef NDEBUG
@@ -2106,8 +2093,8 @@ class GMockVerboseFlagTest : public VerboseFlagPreservingFixture {
         GetCapturedStdout(),
         should_print,
         "Mock function call matches EXPECT_CALL(a, DoA(5))...\n"
-            "    Function call: DoA(5)\n"
-            "Stack trace:\n",
+        "    Function call: DoA(5)\n"
+        "Stack trace:\n",
         "DoA");
 
     // A non-void-returning function.
@@ -2117,9 +2104,9 @@ class GMockVerboseFlagTest : public VerboseFlagPreservingFixture {
         GetCapturedStdout(),
         should_print,
         "Mock function call matches EXPECT_CALL(a, Binary(_, 1))...\n"
-            "    Function call: Binary(2, 1)\n"
-            "          Returns: true\n"
-            "Stack trace:\n",
+        "    Function call: Binary(2, 1)\n"
+        "          Returns: true\n"
+        "Stack trace:\n",
         "Binary");
   }
 
@@ -2128,10 +2115,10 @@ class GMockVerboseFlagTest : public VerboseFlagPreservingFixture {
     NaggyMock<MockA> a;
     const string note =
         "NOTE: You can safely ignore the above warning unless this "
-            "call should not happen.  Do not suppress it by blindly adding "
-            "an EXPECT_CALL() if you don't mean to enforce the call.  "
-            "See https://github.com/google/googletest/blob/master/googlemock/docs/CookBook.md#"
-            "knowing-when-to-expect for details.";
+        "call should not happen.  Do not suppress it by blindly adding "
+        "an EXPECT_CALL() if you don't mean to enforce the call.  "
+        "See https://github.com/google/googletest/blob/master/googlemock/docs/CookBook.md#"
+        "knowing-when-to-expect for details.";
 
     // A void-returning function.
     CaptureStdout();
@@ -2140,9 +2127,9 @@ class GMockVerboseFlagTest : public VerboseFlagPreservingFixture {
         GetCapturedStdout(),
         should_print,
         "\nGMOCK WARNING:\n"
-            "Uninteresting mock function call - returning directly.\n"
-            "    Function call: DoA(5)\n" +
-            note,
+        "Uninteresting mock function call - returning directly.\n"
+        "    Function call: DoA(5)\n" +
+        note,
         "DoA");
 
     // A non-void-returning function.
@@ -2152,10 +2139,10 @@ class GMockVerboseFlagTest : public VerboseFlagPreservingFixture {
         GetCapturedStdout(),
         should_print,
         "\nGMOCK WARNING:\n"
-            "Uninteresting mock function call - returning default value.\n"
-            "    Function call: Binary(2, 1)\n"
-            "          Returns: false\n" +
-            note,
+        "Uninteresting mock function call - returning default value.\n"
+        "    Function call: Binary(2, 1)\n"
+        "          Returns: false\n" +
+        note,
         "Binary");
   }
 };
@@ -2199,7 +2186,7 @@ TEST_F(GMockVerboseFlagTest, InvalidFlagIsTreatedAsWarning) {
 // buffer) when it is not supposed to do so.
 class PrintMeNot {};
 
-void PrintTo(PrintMeNot /* dummy */, ::std::ostream * /* os */) {
+void PrintTo(PrintMeNot /* dummy */, ::std::ostream* /* os */) {
   ADD_FAILURE() << "Google Mock is printing a value that shouldn't be "
                 << "printed even to an internal buffer.";
 }
@@ -2243,38 +2230,38 @@ TEST_F(GMockLogTest, DoesNotPrintWarningInternallyIfVerbosityIsError) {
 // Tests Mock::AllowLeak().
 
 TEST(AllowLeakTest, AllowsLeakingUnusedMockObject) {
-  MockA *a = new MockA;
+  MockA* a = new MockA;
   Mock::AllowLeak(a);
 }
 
 TEST(AllowLeakTest, CanBeCalledBeforeOnCall) {
-  MockA *a = new MockA;
+  MockA* a = new MockA;
   Mock::AllowLeak(a);
   ON_CALL(*a, DoA(_)).WillByDefault(Return());
   a->DoA(0);
 }
 
 TEST(AllowLeakTest, CanBeCalledAfterOnCall) {
-  MockA *a = new MockA;
+  MockA* a = new MockA;
   ON_CALL(*a, DoA(_)).WillByDefault(Return());
   Mock::AllowLeak(a);
 }
 
 TEST(AllowLeakTest, CanBeCalledBeforeExpectCall) {
-  MockA *a = new MockA;
+  MockA* a = new MockA;
   Mock::AllowLeak(a);
   EXPECT_CALL(*a, DoA(_));
   a->DoA(0);
 }
 
 TEST(AllowLeakTest, CanBeCalledAfterExpectCall) {
-  MockA *a = new MockA;
+  MockA* a = new MockA;
   EXPECT_CALL(*a, DoA(_)).Times(AnyNumber());
   Mock::AllowLeak(a);
 }
 
 TEST(AllowLeakTest, WorksWhenBothOnCallAndExpectCallArePresent) {
-  MockA *a = new MockA;
+  MockA* a = new MockA;
   ON_CALL(*a, DoA(_)).WillByDefault(Return());
   EXPECT_CALL(*a, DoA(_)).Times(AnyNumber());
   Mock::AllowLeak(a);

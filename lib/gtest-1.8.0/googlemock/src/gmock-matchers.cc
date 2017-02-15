@@ -45,21 +45,21 @@ namespace testing {
 
 // Constructs a matcher that matches a const string& whose value is
 // equal to s.
-Matcher<const internal::string &>::Matcher(const internal::string &s) {
+Matcher<const internal::string&>::Matcher(const internal::string& s) {
   *this = Eq(s);
 }
 
 // Constructs a matcher that matches a const string& whose value is
 // equal to s.
-Matcher<const internal::string &>::Matcher(const char *s) {
+Matcher<const internal::string&>::Matcher(const char* s) {
   *this = Eq(internal::string(s));
 }
 
 // Constructs a matcher that matches a string whose value is equal to s.
-Matcher<internal::string>::Matcher(const internal::string &s) { *this = Eq(s); }
+Matcher<internal::string>::Matcher(const internal::string& s) { *this = Eq(s); }
 
 // Constructs a matcher that matches a string whose value is equal to s.
-Matcher<internal::string>::Matcher(const char *s) {
+Matcher<internal::string>::Matcher(const char* s) {
   *this = Eq(internal::string(s));
 }
 
@@ -102,11 +102,14 @@ namespace internal {
 
 // Joins a vector of strings as if they are fields of a tuple; returns
 // the joined string.
-GTEST_API_ string JoinAsTuple(const Strings &fields) {
+GTEST_API_ string JoinAsTuple(const Strings& fields) {
   switch (fields.size()) {
-    case 0:return "";
-    case 1:return fields[0];
-    default:string result = "(" + fields[0];
+    case 0:
+      return "";
+    case 1:
+      return fields[0];
+    default:
+      string result = "(" + fields[0];
       for (size_t i = 1; i < fields.size(); i++) {
         result += ", ";
         result += fields[i];
@@ -122,8 +125,8 @@ GTEST_API_ string JoinAsTuple(const Strings &fields) {
 // negation of the matcher.  'param_values' contains a list of strings
 // that are the print-out of the matcher's parameters.
 GTEST_API_ string FormatMatcherDescription(bool negation,
-                                           const char *matcher_name,
-                                           const Strings &param_values) {
+                                           const char* matcher_name,
+                                           const Strings& param_values) {
   string result = ConvertIdentifierNameToWords(matcher_name);
   if (param_values.size() >= 1)
     result += " " + JoinAsTuple(param_values);
@@ -194,7 +197,7 @@ GTEST_API_ string FormatMatcherDescription(bool negation,
 //       'http://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm'
 class MaxBipartiteMatchState {
  public:
-  explicit MaxBipartiteMatchState(const MatchMatrix &graph)
+  explicit MaxBipartiteMatchState(const MatchMatrix& graph)
       : graph_(&graph),
         left_(graph_->LhsSize(), kUnused),
         right_(graph_->RhsSize(), kUnused) {
@@ -220,7 +223,7 @@ class MaxBipartiteMatchState {
       // Reset the path-marking vector and try to find a path from
       // source to sink starting at the left_[ilhs] node.
       GTEST_CHECK_(left_[ilhs] == kUnused)
-            << "ilhs: " << ilhs << ", left_[ilhs]: " << left_[ilhs];
+          << "ilhs: " << ilhs << ", left_[ilhs]: " << left_[ilhs];
       // 'seen' initialized to 'graph_->RhsSize()' copies of 0.
       seen.assign(graph_->RhsSize(), 0);
       TryAugment(ilhs, &seen);
@@ -253,7 +256,7 @@ class MaxBipartiteMatchState {
   // left_ element holding kUnused before TryAugment will be holding it
   // when TryAugment returns.
   //
-  bool TryAugment(size_t ilhs, ::std::vector<char> *seen) {
+  bool TryAugment(size_t ilhs, ::std::vector<char>* seen) {
     for (size_t irhs = 0; irhs < graph_->RhsSize(); ++irhs) {
       if ((*seen)[irhs])
         continue;
@@ -281,7 +284,7 @@ class MaxBipartiteMatchState {
     return false;
   }
 
-  const MatchMatrix *graph_;  // not owned
+  const MatchMatrix* graph_;  // not owned
   // Each element of the left_ vector represents a left hand side node
   // (i.e. an element) and each element of right_ is a right hand side
   // node (i.e. a matcher). The values in the left_ vector indicate
@@ -302,14 +305,14 @@ class MaxBipartiteMatchState {
 const size_t MaxBipartiteMatchState::kUnused;
 
 GTEST_API_ ElementMatcherPairs
-FindMaxBipartiteMatching(const MatchMatrix &g) {
+FindMaxBipartiteMatching(const MatchMatrix& g) {
   return MaxBipartiteMatchState(g).Compute();
 }
 
-static void LogElementMatcherPairVec(const ElementMatcherPairs &pairs,
-                                     ::std::ostream *stream) {
+static void LogElementMatcherPairVec(const ElementMatcherPairs& pairs,
+                                     ::std::ostream* stream) {
   typedef ElementMatcherPairs::const_iterator Iter;
-  ::std::ostream &os = *stream;
+  ::std::ostream& os = *stream;
   os << "{";
   const char *sep = "";
   for (Iter it = pairs.begin(); it != pairs.end(); ++it) {
@@ -322,8 +325,8 @@ static void LogElementMatcherPairVec(const ElementMatcherPairs &pairs,
 }
 
 // Tries to find a pairing, and explains the result.
-GTEST_API_ bool FindPairing(const MatchMatrix &matrix,
-                            MatchResultListener *listener) {
+GTEST_API_ bool FindPairing(const MatchMatrix& matrix,
+                            MatchResultListener* listener) {
   ElementMatcherPairs matches = FindMaxBipartiteMatching(matrix);
 
   size_t max_flow = matches.size();
@@ -332,7 +335,7 @@ GTEST_API_ bool FindPairing(const MatchMatrix &matrix,
   if (!result) {
     if (listener->IsInterested()) {
       *listener << "where no permutation of the elements can "
-          "satisfy all matchers, and the closest match is "
+                   "satisfy all matchers, and the closest match is "
                 << max_flow << " of " << matrix.RhsSize()
                 << " matchers with the pairings:\n";
       LogElementMatcherPairVec(matches, listener->stream());
@@ -356,7 +359,7 @@ GTEST_API_ bool FindPairing(const MatchMatrix &matrix,
 bool MatchMatrix::NextGraph() {
   for (size_t ilhs = 0; ilhs < LhsSize(); ++ilhs) {
     for (size_t irhs = 0; irhs < RhsSize(); ++irhs) {
-      char &b = matched_[SpaceIndex(ilhs, irhs)];
+      char& b = matched_[SpaceIndex(ilhs, irhs)];
       if (!b) {
         b = 1;
         return true;
@@ -370,7 +373,7 @@ bool MatchMatrix::NextGraph() {
 void MatchMatrix::Randomize() {
   for (size_t ilhs = 0; ilhs < LhsSize(); ++ilhs) {
     for (size_t irhs = 0; irhs < RhsSize(); ++irhs) {
-      char &b = matched_[SpaceIndex(ilhs, irhs)];
+      char& b = matched_[SpaceIndex(ilhs, irhs)];
       b = static_cast<char>(rand() & 1);  // NOLINT
     }
   }
@@ -390,7 +393,7 @@ string MatchMatrix::DebugString() const {
 }
 
 void UnorderedElementsAreMatcherImplBase::DescribeToImpl(
-    ::std::ostream *os) const {
+    ::std::ostream* os) const {
   if (matcher_describers_.empty()) {
     *os << "is empty";
     return;
@@ -402,7 +405,7 @@ void UnorderedElementsAreMatcherImplBase::DescribeToImpl(
   }
   *os << "has " << Elements(matcher_describers_.size())
       << " and there exists some permutation of elements such that:\n";
-  const char *sep = "";
+  const char* sep = "";
   for (size_t i = 0; i != matcher_describers_.size(); ++i) {
     *os << sep << " - element #" << i << " ";
     matcher_describers_[i]->DescribeTo(os);
@@ -411,7 +414,7 @@ void UnorderedElementsAreMatcherImplBase::DescribeToImpl(
 }
 
 void UnorderedElementsAreMatcherImplBase::DescribeNegationToImpl(
-    ::std::ostream *os) const {
+    ::std::ostream* os) const {
   if (matcher_describers_.empty()) {
     *os << "isn't empty";
     return;
@@ -424,7 +427,7 @@ void UnorderedElementsAreMatcherImplBase::DescribeNegationToImpl(
   }
   *os << "doesn't have " << Elements(matcher_describers_.size())
       << ", or there exists no permutation of elements such that:\n";
-  const char *sep = "";
+  const char* sep = "";
   for (size_t i = 0; i != matcher_describers_.size(); ++i) {
     *os << sep << " - element #" << i << " ";
     matcher_describers_[i]->DescribeTo(os);
@@ -439,9 +442,9 @@ void UnorderedElementsAreMatcherImplBase::DescribeNegationToImpl(
 // if the success criteria are not met.
 bool UnorderedElementsAreMatcherImplBase::
 VerifyAllElementsAndMatchersAreMatched(
-    const ::std::vector<string> &element_printouts,
-    const MatchMatrix &matrix,
-    MatchResultListener *listener) const {
+    const ::std::vector<string>& element_printouts,
+    const MatchMatrix& matrix,
+    MatchResultListener* listener) const {
   bool result = true;
   ::std::vector<char> element_matched(matrix.LhsSize(), 0);
   ::std::vector<char> matcher_matched(matrix.RhsSize(), 0);
@@ -455,7 +458,7 @@ VerifyAllElementsAndMatchersAreMatched(
   }
 
   {
-    const char *sep =
+    const char* sep =
         "where the following matchers don't match any elements:\n";
     for (size_t mi = 0; mi < matcher_matched.size(); ++mi) {
       if (matcher_matched[mi])
@@ -470,9 +473,9 @@ VerifyAllElementsAndMatchersAreMatched(
   }
 
   {
-    const char *sep =
+    const char* sep =
         "where the following elements don't match any matchers:\n";
-    const char *outer_sep = "";
+    const char* outer_sep = "";
     if (!result) {
       outer_sep = "\nand ";
     }

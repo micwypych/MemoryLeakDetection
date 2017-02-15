@@ -52,7 +52,7 @@
 
 // Ensures that there is at least one operator<< in the global namespace.
 // See Message& operator<<(...) below for why.
-void operator<<(const testing::internal::Secret &, int);
+void operator<<(const testing::internal::Secret&, int);
 
 namespace testing {
 
@@ -86,19 +86,19 @@ class GTEST_API_ Message {
  private:
   // The type of basic IO manipulators (endl, ends, and flush) for
   // narrow streams.
-  typedef std::ostream &(*BasicNarrowIoManip)(std::ostream &);
+  typedef std::ostream& (*BasicNarrowIoManip)(std::ostream&);
 
  public:
   // Constructs an empty Message.
   Message();
 
   // Copy constructor.
-  Message(const Message &msg) : ss_(new ::std::stringstream) {  // NOLINT
+  Message(const Message& msg) : ss_(new ::std::stringstream) {  // NOLINT
     *ss_ << msg.GetString();
   }
 
   // Constructs a Message from a C-string.
-  explicit Message(const char *str) : ss_(new ::std::stringstream) {
+  explicit Message(const char* str) : ss_(new ::std::stringstream) {
     *ss_ << str;
   }
 
@@ -111,8 +111,8 @@ class GTEST_API_ Message {
   }
 #else
   // Streams a non-pointer value to this object.
-  template<typename T>
-  inline Message &operator<<(const T &val) {
+  template <typename T>
+  inline Message& operator <<(const T& val) {
     // Some libraries overload << for STL containers.  These
     // overloads are defined in the global namespace instead of ::std.
     //
@@ -127,7 +127,7 @@ class GTEST_API_ Message {
     // from the global namespace.  With this using declaration,
     // overloads of << defined in the global namespace and those
     // visible via Koenig lookup are both exposed in this function.
-    using ::operator<<;
+    using ::operator <<;
     *ss_ << val;
     return *this;
   }
@@ -145,8 +145,8 @@ class GTEST_API_ Message {
   // may get "0", "(nil)", "(null)", or an access violation.  To
   // ensure consistent result across compilers, we always treat NULL
   // as "(null)".
-  template<typename T>
-  inline Message &operator<<(T *const &pointer) {  // NOLINT
+  template <typename T>
+  inline Message& operator <<(T* const& pointer) {  // NOLINT
     if (pointer == NULL) {
       *ss_ << "(null)";
     } else {
@@ -162,25 +162,25 @@ class GTEST_API_ Message {
   // templatized version above.  Without this definition, streaming
   // endl or other basic IO manipulators to Message will confuse the
   // compiler.
-  Message &operator<<(BasicNarrowIoManip val) {
+  Message& operator <<(BasicNarrowIoManip val) {
     *ss_ << val;
     return *this;
   }
 
   // Instead of 1/0, we want to see true/false for bool values.
-  Message &operator<<(bool b) {
+  Message& operator <<(bool b) {
     return *this << (b ? "true" : "false");
   }
 
   // These two overloads allow streaming a wide C string to a Message
   // using the UTF-8 encoding.
-  Message &operator<<(const wchar_t *wide_c_str);
-  Message &operator<<(wchar_t *wide_c_str);
+  Message& operator <<(const wchar_t* wide_c_str);
+  Message& operator <<(wchar_t* wide_c_str);
 
 #if GTEST_HAS_STD_WSTRING
   // Converts the given wide string to a narrow string using the UTF-8
   // encoding, and streams the result to this Message object.
-  Message &operator<<(const ::std::wstring &wstr);
+  Message& operator <<(const ::std::wstring& wstr);
 #endif  // GTEST_HAS_STD_WSTRING
 
 #if GTEST_HAS_GLOBAL_WSTRING
@@ -221,15 +221,15 @@ class GTEST_API_ Message {
 #endif  // GTEST_OS_SYMBIAN
 
   // We'll hold the text streamed to this object here.
-  const internal::scoped_ptr<::std::stringstream> ss_;
+  const internal::scoped_ptr< ::std::stringstream> ss_;
 
   // We declare (but don't implement) this to prevent the compiler
   // from implementing the assignment operator.
-  void operator=(const Message &);
+  void operator=(const Message&);
 };
 
 // Streams a Message to an ostream.
-inline std::ostream &operator<<(std::ostream &os, const Message &sb) {
+inline std::ostream& operator <<(std::ostream& os, const Message& sb) {
   return os << sb.GetString();
 }
 
@@ -239,8 +239,8 @@ namespace internal {
 // converted to "(null)".  When the input value is a ::string,
 // ::std::string, ::wstring, or ::std::wstring object, each NUL
 // character in it is replaced with "\\0".
-template<typename T>
-std::string StreamableToString(const T &streamable) {
+template <typename T>
+std::string StreamableToString(const T& streamable) {
   return (Message() << streamable).GetString();
 }
 
