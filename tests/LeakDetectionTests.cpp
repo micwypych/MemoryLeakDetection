@@ -28,10 +28,15 @@ class LeakDetectionTests : public ::testing::Test {
     ss << " was not properly freed";
     return ss.str();
   }
+
+  template<typename T>
+  void alloc_unique_value(T &&t) {
+    std::unique_ptr<T> p = std::make_unique<T>(std::forward<T>(t));
+  }
 };
 
 TEST_F(LeakDetectionTests, CreateNewInstance) {
-  std::cout << "hello world!" << std::endl;
+
 }
 
 TEST_F(LeakDetectionTests, MakeVerifictaionAfterEmptyCode) {
@@ -85,6 +90,15 @@ TEST_F(LeakDetectionTests,
   auto issues = MemorySpy::issues();
   ASSERT_EQ(1, issues.size());
   ASSERT_EQ(expected_message(&(*d), sizeof(double)), issues[0]);
+}
+
+TEST_F(LeakDetectionTests,
+       VerifictaionAfterSingleAllocationBySmartPointerAfterExitingScopeExpectedVerificationSuccess) {
+  alloc_unique_value(89.9);
+  MemorySpy::stop_spying();
+  ASSERT_TRUE(MemorySpy::verify());
+  auto issues = MemorySpy::issues();
+  ASSERT_EQ(0, issues.size());
 }
 
 int main(int argc, char **argv) {
