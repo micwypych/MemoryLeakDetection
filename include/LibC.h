@@ -9,6 +9,7 @@
 
 class LibC {
  public:
+  virtual bool initialize() =0;
   virtual void *malloc(size_t nbytes) =0;
 //  virtual void *realloc(void *aptr, size_t nbytes ) =0;
 //  virtual void *reallocf(void *aptr, size_t nbytes ) =0;
