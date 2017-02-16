@@ -3,14 +3,14 @@
 //
 
 #include "AllocationStack.h"
-void AllocationStack::push_start() {
-  states++;
+void AllocationStack::PushStart() {
+  states_++;
 }
-void AllocationStack::pop_stop() {
-  if (states > 0) {
-    states--;
+void AllocationStack::PopStop() {
+  if (states_ > 0) {
+    states_--;
   }
 }
-bool AllocationStack::state() {
-  return states > 1;
+bool AllocationStack::State() {
+  return states_ > 1;
 }

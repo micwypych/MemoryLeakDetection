@@ -13,22 +13,22 @@ MemoryEntry::MemoryEntry() : memory_ptr(nullptr), memory_size{0}, validity{false
 
 }
 
-bool MemoryEntry::is_valid() const {
+bool MemoryEntry::IsValid() const {
   return validity;
 }
 
-bool MemoryEntry::points_to(const void *ptr) const {
+bool MemoryEntry::PointsTo(const void *ptr) const {
   return memory_ptr == ptr;
 }
 
-void MemoryEntry::invalidate() {
+void MemoryEntry::Invalidate() {
   validity = false;
 }
 
-std::string MemoryEntry::message(std::string pattern) const {
-  if (is_valid()) {
-    std::string tmp = std::regex_replace(pattern, std::regex {R"(\{PTR\})"}, to_string(memory_ptr));
-    std::string result = std::regex_replace(tmp, std::regex {R"(\{SIZE\})"}, to_string(memory_size));
+std::string MemoryEntry::Message(std::string pattern) const {
+  if (IsValid()) {
+    std::string tmp = std::regex_replace(pattern, std::regex {R"(\{PTR\})"}, ToString(memory_ptr));
+    std::string result = std::regex_replace(tmp, std::regex {R"(\{SIZE\})"}, ToString(memory_size));
     return result;
 //    std::stringstream ss;
 //    ss << "memory allocated at ";
@@ -41,19 +41,19 @@ std::string MemoryEntry::message(std::string pattern) const {
   }
 }
 MemoryEntry MemoryEntry::operator=(const MemoryEntry &entry) const {
-  if (entry.is_valid()) {
+  if (entry.IsValid()) {
     return MemoryEntry(entry.memory_ptr, entry.memory_size);
   } else {
     return {};
   }
 }
 
-std::string MemoryEntry::to_string(const void *address) {
+std::string MemoryEntry::ToString(const void *address) {
   std::stringstream ss;
   ss << address;
   return ss.str();
 }
 
-std::string MemoryEntry::to_string(size_t size) {
+std::string MemoryEntry::ToString(size_t size) {
   return std::to_string(size);
 }

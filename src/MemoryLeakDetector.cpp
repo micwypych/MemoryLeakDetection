@@ -3,38 +3,40 @@
 //
 
 #include <cstddef>
-#include <GNULibCDelegator.h>
+#include <GnuLibCDelegator.h>
 #include <MemorySpy.h>
 
-using LibCDelegator_t = GNULibCDelegator;
+using LibCDelegator_t = GnuLibCDelegator;
 
 namespace memspy {
-void start_spying() {
-  return MemorySpy<LibCDelegator_t>::start_spying();
+void StartSpying() {
+  return MemorySpy<LibCDelegator_t>::StartSpying();
 }
 
-void stop_spying() {
-  return MemorySpy<LibCDelegator_t>::stop_spying();
+void StopSpying() {
+  return MemorySpy<LibCDelegator_t>::StopSpying();
 }
 
-void clear_state() {
-  return MemorySpy<LibCDelegator_t>::clear_state();
+void ClearState() {
+  return MemorySpy<LibCDelegator_t>::ClearState();
 }
 
-std::vector<std::string> issues() {
-  return MemorySpy<LibCDelegator_t>::issues();
+std::vector<std::string> Issues() {
+  MemorySpy<LibCDelegator_t >::IssuesList issues = MemorySpy<LibCDelegator_t>::Issues();
+  std::vector<std::string> to_return = issues;
+  return to_return;
 }
 
-bool verify() {
-  return MemorySpy<LibCDelegator_t>::verify();
+bool Verify() {
+  return MemorySpy<LibCDelegator_t>::Verify();
 }
 }
 
 void *malloc(size_t size) {
-  return MemorySpy<LibCDelegator_t>::malloc(size);
+  return MemorySpy<LibCDelegator_t>::Malloc(size);
 }
 
 void free(void *aptr) {
-  return MemorySpy<LibCDelegator_t>::free(aptr);
+  return MemorySpy<LibCDelegator_t>::Free(aptr);
 }
 

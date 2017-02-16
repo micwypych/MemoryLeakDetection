@@ -5,14 +5,13 @@
 #ifndef MEMORYLEAKDETECTION_ALLOCATIONSTACK_H
 #define MEMORYLEAKDETECTION_ALLOCATIONSTACK_H
 
-#include <vector>
 class AllocationStack {
  public:
-  void push_start();
-  void pop_stop();
-  bool state();
+  void PushStart();
+  void PopStop();
+  bool State();
  private:
-  int states = 0;
+  int states_ = 0;
 };
 
 #endif //MEMORYLEAKDETECTION_ALLOCATIONSTACK_H

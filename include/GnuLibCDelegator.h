@@ -6,14 +6,14 @@
 #define MEMORYLEAKDETECTION_LIBCDELEGATOR_H
 
 #include "LibC.h"
-class GNULibCDelegator : public virtual LibC {
+class GnuLibCDelegator : public virtual LibC {
  public:
   typedef void *(*libc_malloc_t)(size_t);
   typedef void (*libc_free_t)(void *);
 
-  bool initialize() override;
-  void *malloc(size_t nbytes) override;
-  void free(void *aptr) override;
+  bool Initialize() override;
+  void *Malloc(size_t nbytes) override;
+  void Free(void *aptr) override;
 
 };
 #endif //MEMORYLEAKDETECTION_LIBCDELEGATOR_H

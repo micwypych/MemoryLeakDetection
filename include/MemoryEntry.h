@@ -12,14 +12,14 @@ class MemoryEntry {
   MemoryEntry(const void *memory_ptr, const size_t memory_size);
   MemoryEntry();
 
-  virtual bool is_valid() const;
-  virtual bool points_to(const void *ptr) const;
-  virtual void invalidate();
+  virtual bool IsValid() const;
+  virtual bool PointsTo(const void *ptr) const;
+  virtual void Invalidate();
 
   ///
   /// \param pattern  {PTR} is replaced with address of the internal pointer and {SIZE} is replaced with memory size
   /// \return pattern with value substitution if entry is valid or empty string otherwise
-  virtual std::string message(std::string pattern) const;
+  virtual std::string Message(std::string pattern) const;
 
   MemoryEntry operator=(const MemoryEntry &entry) const;
 
@@ -27,8 +27,8 @@ class MemoryEntry {
   const void *memory_ptr;
   size_t memory_size;
   bool validity;
-  static std::string to_string(const void *address);
-  static std::string to_string(size_t size);
+  static std::string ToString(const void *address);
+  static std::string ToString(size_t size);
 };
 
 #endif //MEMORYLEAKDETECTION_MEMORYENTRY_H

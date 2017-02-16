@@ -10,7 +10,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include "GNULibCDelegator.h"
+#include "GnuLibCDelegator.h"
 #include "MemoryEntry.h"
 #include "AllocationStack.h"
 
@@ -18,95 +18,98 @@ template<class LIBC>
 class MemorySpy {
  public:
 
-  static void initialize();
-  static void start_spying();
-  static void stop_spying();
-  static void clear_state();
+  using IssuesList = std::vector<std::string>;
 
-  static void *malloc(const size_t size);
-  static void free(void *aptr);
+  static void Initialize();
+  static void StartSpying();
+  static void StopSpying();
+  static void ClearState();
 
-  static bool verify();
-  static std::vector<std::string> issues();
+  static void *Malloc(const size_t size);
+  static void Free(void *aptr);
+
+  static bool Verify();
+  static IssuesList Issues();
 
 //  static std::shared_ptr<MemorySpy> create();
  protected:
-  static bool initialized;
-  static bool spying;
-  static MemorySpy &instance();
-  MemorySpy() : entries({}), n_entries(0) {}
-  static void *raw_malloc(const size_t size);
+  static MemorySpy &Instance();
   static bool readyForSpying();
-  static void raw_free(void *aptr);
+  MemorySpy() : entries_({}), n_entries_(0) {}
 
-  virtual void *spy_malloc(const size_t size);
-  virtual void spy_free(void *aptr);
-  virtual void spy_clear_state();
-  virtual bool spy_verify();
-  virtual std::vector<std::string> spy_issues();
+  static bool initialized_;
+  static bool spying_;
 
-  virtual void internal_allocation_start();
-  virtual void internal_allocation_stop();
+  static void *RawMalloc(const size_t size);
+  static void RawFree(void *aptr);
+
+  virtual void *SpyMalloc(const size_t size);
+  virtual void SpyFree(void *aptr);
+  virtual void SpyClearState();
+  virtual bool SpyVerify();
+  virtual IssuesList SpyIssues();
+
+  virtual void InternalAllocationStart();
+  virtual void InternalAllocationStop();
 
   template<typename T, typename Operation, typename DefualtOperation>
-  static T safe_internall_call(Operation mainOperation, DefualtOperation defualtOperation);
+  static T SafeInternallCall(Operation mainOperation, DefualtOperation defualtOperation);
   template<typename Operation, typename DefualtOperation>
-  static void safe_internall_proc(Operation op, DefualtOperation defaultResult);
+  static void SafeInternallProc(Operation op, DefualtOperation defaultResult);
 
  private:
-  AllocationStack internal_allocation_state;
-  constexpr static size_t MAX_ENTRIES_POSSIBLE = 1024;
-  static MemorySpy _instance;
-  int n_entries;
-  LIBC libc;
-  static LIBC raw_libc;
-  std::vector<MemoryEntry> entries;
-  void store_memory_malloc(const size_t size, const void *memory);
-  void invalidate_entry(const void *aptr);
-  bool try_invalidate_entry(const void *aptr);
-  bool internal_allocation_on();
+  AllocationStack internal_allocation_state_;
+  static MemorySpy instance_;
+  int n_entries_;
+  LIBC libc_;
+  static LIBC raw_libc_;
+  std::vector<MemoryEntry> entries_;
+  void StoreMemoryMalloc(const size_t size, const void *memory);
+  void InvalidateEntry(const void *aptr);
+  bool TryInvalidateEntry(const void *aptr);
+  bool InternalAllocationOn();
 };
 
 template<class LIBC>
-bool MemorySpy<LIBC>::initialized = false;
+bool MemorySpy<LIBC>::initialized_ = false;
 
 template<class LIBC>
-bool MemorySpy<LIBC>::spying = false;
+bool MemorySpy<LIBC>::spying_ = false;
 
 template<class LIBC>
-LIBC MemorySpy<LIBC>::raw_libc{};
+LIBC MemorySpy<LIBC>::raw_libc_{};
 
 template<class LIBC>
-MemorySpy<LIBC> MemorySpy<LIBC>::_instance{};
+MemorySpy<LIBC> MemorySpy<LIBC>::instance_{};
 
 template<class LIBC>
-void *MemorySpy<LIBC>::spy_malloc(const size_t size) {
-  void *memory = libc.malloc(size);
-  if (not internal_allocation_on()) {
+void *MemorySpy<LIBC>::SpyMalloc(const size_t size) {
+  void *memory = libc_.Malloc(size);
+  if (not InternalAllocationOn()) {
     std::cout << "hello" << std::endl;
-    store_memory_malloc(size, memory);
+    StoreMemoryMalloc(size, memory);
   }
   return memory;
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::store_memory_malloc(const size_t size, const void *memory) {
-  entries.emplace_back(memory, size);
+void MemorySpy<LIBC>::StoreMemoryMalloc(const size_t size, const void *memory) {
+  entries_.emplace_back(memory, size);
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::spy_free(void *aptr) {
-  if (not internal_allocation_on()) {
+void MemorySpy<LIBC>::SpyFree(void *aptr) {
+  if (not InternalAllocationOn()) {
     std::cout << "bye" << std::endl;
-    invalidate_entry(aptr);
+    InvalidateEntry(aptr);
   }
-  libc.free(aptr);
+  libc_.Free(aptr);
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::invalidate_entry(const void *aptr) {
+void MemorySpy<LIBC>::InvalidateEntry(const void *aptr) {
   if (aptr != nullptr) {
-    bool allocated = try_invalidate_entry(aptr);
+    bool allocated = TryInvalidateEntry(aptr);
     if (!allocated) {
       throw "memory was not allocated first";
     }
@@ -114,11 +117,11 @@ void MemorySpy<LIBC>::invalidate_entry(const void *aptr) {
 }
 
 template<class LIBC>
-bool MemorySpy<LIBC>::try_invalidate_entry(const void *aptr) {
+bool MemorySpy<LIBC>::TryInvalidateEntry(const void *aptr) {
   bool allocated{false};
-  for (auto &entry : entries) {
-    if (entry.is_valid() && entry.points_to(aptr)) {
-      entry.invalidate();
+  for (auto &entry : entries_) {
+    if (entry.IsValid() && entry.PointsTo(aptr)) {
+      entry.Invalidate();
       allocated = true;
     }
   }
@@ -126,17 +129,17 @@ bool MemorySpy<LIBC>::try_invalidate_entry(const void *aptr) {
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::spy_clear_state() {
-  entries.clear();
+void MemorySpy<LIBC>::SpyClearState() {
+  entries_.clear();
 }
 
 template<class LIBC>
-bool MemorySpy<LIBC>::spy_verify() {
+bool MemorySpy<LIBC>::SpyVerify() {
   int valid_elements = 0;
-  std::for_each(entries.begin(), entries.end(),
+  std::for_each(entries_.begin(), entries_.end(),
                 [&valid_elements]
                     (auto &entry) {
-                  if (entry.is_valid()) {
+                  if (entry.IsValid()) {
                     valid_elements++;
                   }
                 });
@@ -144,42 +147,42 @@ bool MemorySpy<LIBC>::spy_verify() {
 }
 
 template<class LIBC>
-MemorySpy<LIBC> &MemorySpy<LIBC>::instance() {
-  return _instance;
+MemorySpy<LIBC> &MemorySpy<LIBC>::Instance() {
+  return instance_;
 }
 
 template<class LIBC>
-void *MemorySpy<LIBC>::malloc(const size_t size) {
-  return safe_internall_call<void *>(
+void *MemorySpy<LIBC>::Malloc(const size_t size) {
+  return SafeInternallCall<void *>(
       [size](auto &inst) {
-        return inst.spy_malloc(size);
+        return inst.SpyMalloc(size);
       },
       [size]() {
-        return raw_malloc(size);
+        return RawMalloc(size);
       });
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::free(void *aptr) {
-  safe_internall_proc(
+void MemorySpy<LIBC>::Free(void *aptr) {
+  SafeInternallProc(
       [aptr](auto &inst) {
-        inst.spy_free(aptr);
+        inst.SpyFree(aptr);
       },
       [aptr]() {
-        raw_free(aptr);
+        RawFree(aptr);
       });
 }
 
 template<class LIBC>
 bool MemorySpy<LIBC>::readyForSpying() {
-  return initialized;
+  return initialized_;
 }
 
 template<class LIBC>
-bool MemorySpy<LIBC>::verify() {
-  return safe_internall_call<bool>(
+bool MemorySpy<LIBC>::Verify() {
+  return SafeInternallCall<bool>(
       [](auto &inst) {
-        return inst.spy_verify();
+        return inst.SpyVerify();
       },
       [] {
         return true;
@@ -187,41 +190,41 @@ bool MemorySpy<LIBC>::verify() {
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::clear_state() {
-  safe_internall_proc(
+void MemorySpy<LIBC>::ClearState() {
+  SafeInternallProc(
       [](auto &inst) {
-        inst.spy_clear_state();
+        inst.SpyClearState();
       },
       [] {});
-  initialized = false;
+  initialized_ = false;
 }
 
 template<class LIBC>
-void *MemorySpy<LIBC>::raw_malloc(const size_t size) {
-  return raw_libc.malloc(size);
+void *MemorySpy<LIBC>::RawMalloc(const size_t size) {
+  return raw_libc_.Malloc(size);
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::raw_free(void *aptr) {
-  return raw_libc.free(aptr);
+void MemorySpy<LIBC>::RawFree(void *aptr) {
+  return raw_libc_.Free(aptr);
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::start_spying() {
-  initialize();
-  spying = true;
+void MemorySpy<LIBC>::StartSpying() {
+  Initialize();
+  spying_ = true;
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::stop_spying() {
-  spying = false;
+void MemorySpy<LIBC>::StopSpying() {
+  spying_ = false;
 }
 
 template<class LIBC>
-std::vector<std::string> MemorySpy<LIBC>::issues() {
-  return safe_internall_call<std::vector<std::string>>(
+std::vector<std::string> MemorySpy<LIBC>::Issues() {
+  return SafeInternallCall<std::vector<std::string>>(
       [](auto &inst) {
-        return inst.spy_issues();
+        return inst.SpyIssues();
       },
       []() {
         return std::vector<std::string>();
@@ -229,44 +232,44 @@ std::vector<std::string> MemorySpy<LIBC>::issues() {
 }
 
 template<class LIBC>
-std::vector<std::string> MemorySpy<LIBC>::spy_issues() {
-  std::vector<std::string> result;
+typename MemorySpy<LIBC>::IssuesList MemorySpy<LIBC>::SpyIssues() {
+  IssuesList result;
   std::vector<MemoryEntry> temp;
   std::remove_copy_if(
-      begin(entries),
-      end(entries),
+      begin(entries_),
+      end(entries_),
       std::back_inserter(temp),
       [](const auto &entry) {
-        return not entry.is_valid();
+        return not entry.IsValid();
       });;
   std::transform(
       begin(temp),
       end(temp),
       std::back_inserter(result),
       [](const auto &entry) {
-        return entry.message("memory allocated at {PTR} of size {SIZE} was not properly freed");
+        return entry.Message("memory allocated at {PTR} of size {SIZE} was not properly freed");
       });
   return result;
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::internal_allocation_start() {
-  internal_allocation_state.push_start();
+void MemorySpy<LIBC>::InternalAllocationStart() {
+  internal_allocation_state_.PushStart();
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::internal_allocation_stop() {
-  internal_allocation_state.pop_stop();
+void MemorySpy<LIBC>::InternalAllocationStop() {
+  internal_allocation_state_.PopStop();
 }
 
 template<class LIBC>
 template<typename T, typename Operation, typename DefualtOperation>
-T MemorySpy<LIBC>::safe_internall_call(Operation op, DefualtOperation defaultResult) {
+T MemorySpy<LIBC>::SafeInternallCall(Operation op, DefualtOperation defaultResult) {
   //TODO does not work with void* static_assert(std::is_void<T>::value,"cannot use call with void return type instead use safe_internal_proc");
   if (readyForSpying()) {
-    instance().internal_allocation_start();
-    auto result = op(instance());
-    instance().internal_allocation_stop();
+    Instance().InternalAllocationStart();
+    auto result = op(Instance());
+    Instance().InternalAllocationStop();
     return result;
   } else {
     return defaultResult();
@@ -275,28 +278,28 @@ T MemorySpy<LIBC>::safe_internall_call(Operation op, DefualtOperation defaultRes
 
 //TODO and not recording suspended
 template<class LIBC>
-bool MemorySpy<LIBC>::internal_allocation_on() {
-  return internal_allocation_state.state() or not spying;
+bool MemorySpy<LIBC>::InternalAllocationOn() {
+  return internal_allocation_state_.State() or not spying_;
 }
 
 template<class LIBC>
 template<typename Operation, typename DefualtOperation>
-void MemorySpy<LIBC>::safe_internall_proc(Operation op, DefualtOperation defaultResult) {
+void MemorySpy<LIBC>::SafeInternallProc(Operation op, DefualtOperation defaultResult) {
   if (readyForSpying()) {
-    instance().internal_allocation_start();
-    op(instance());
-    instance().internal_allocation_stop();
+    Instance().InternalAllocationStart();
+    op(Instance());
+    Instance().InternalAllocationStop();
   } else {
     defaultResult();
   }
 }
 
 template<class LIBC>
-void MemorySpy<LIBC>::initialize() {
-  if (not initialized) {
-    instance().internal_allocation_on();
-    initialized = instance().libc.initialize();
-    instance().internal_allocation_stop();
+void MemorySpy<LIBC>::Initialize() {
+  if (not initialized_) {
+    Instance().InternalAllocationOn();
+    initialized_ = Instance().libc_.Initialize();
+    Instance().InternalAllocationStop();
   }
 }
 

@@ -7,13 +7,17 @@
 
 #include <cstddef>
 
-namespace memspy {
-void start_spying();
-void stop_spying();
-void clear_state();
+#include <vector>
+#include <string>
 
-std::vector<std::string> issues();
-bool verify();
+namespace memspy {
+
+void StartSpying();
+void StopSpying();
+void ClearState();
+
+std::vector<std::string> Issues();
+bool Verify();
 }
 
 void *malloc(size_t size);

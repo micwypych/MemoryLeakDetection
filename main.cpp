@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include <memory>
-#include <MemorySpy.h>
 #include <iterator>
 
 #include "MemoryLeakDetector.h"
@@ -12,7 +11,7 @@
 int main() {
   std::cout << "Hello, World!" << std::endl;
 
-  start_spying();
+  memspy::StartSpying();
 
   int *p = new int {3};
   delete p;
@@ -20,18 +19,15 @@ int main() {
   int *pt = new int[20];
 //  delete[] pt;
 
-  stop_spying();
+  memspy::StopSpying();
 
-  bool result = MemorySpy::verify();
+  bool result = memspy::Verify();
   std::cout<<(result?"true":"false")<<std::endl;
 
-  auto issues = MemorySpy::issues();
+  auto issues = memspy::Issues();
   std::copy(begin(issues), end(issues), std::ostream_iterator<std::string>(std::cout, "\n"));
-//  for (const auto & str : MemorySpy::issues()) {
-//    std::cout << str << std::endl;
-//  }
 
-  clear_state();
+  memspy::ClearState();
 
   return 0;
 }

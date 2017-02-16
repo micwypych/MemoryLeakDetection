@@ -10,12 +10,12 @@ class LeakDetectionTests : public ::testing::Test {
 
  protected:
   virtual void SetUp() override {
-    memspy::start_spying();
+    memspy::StartSpying();
   }
 
   virtual void TearDown() override {
-    memspy::stop_spying();
-    memspy::clear_state();
+    memspy::StopSpying();
+    memspy::ClearState();
   }
  public:
   std::string expected_message(void *pointer, size_t size) {
@@ -39,15 +39,15 @@ TEST_F(LeakDetectionTests, CreateNewInstance) {
 }
 
 TEST_F(LeakDetectionTests, MakeVerifictaionAfterEmptyCode) {
-  ASSERT_TRUE(memspy::verify());
+  ASSERT_TRUE(memspy::Verify());
 }
 
 TEST_F(LeakDetectionTests,
        VerifictaionAfterAllocationOfIntByNewOperatorWithoutDeallocationExpectedVerificationFailture) {
   int *pointer = new int {5};
-  memspy::stop_spying();
-  ASSERT_FALSE(memspy::verify());
-  auto issues = memspy::issues();
+  memspy::StopSpying();
+  ASSERT_FALSE(memspy::Verify());
+  auto issues = memspy::Issues();
   ASSERT_EQ(1, issues.size());
   ASSERT_EQ(expected_message(pointer, sizeof(int)), issues[0]);
   delete pointer;
@@ -56,9 +56,9 @@ TEST_F(LeakDetectionTests,
 TEST_F(LeakDetectionTests,
        VerifictaionAfterAllocationOfIntTableByNewOperatorWithoutDeallocationExpectedVerificationFailture) {
   int *pointer = new int[20];
-  memspy::stop_spying();
-  ASSERT_FALSE(memspy::verify());
-  auto issues = memspy::issues();
+  memspy::StopSpying();
+  ASSERT_FALSE(memspy::Verify());
+  auto issues = memspy::Issues();
   ASSERT_EQ(1, issues.size());
   ASSERT_EQ(expected_message(pointer, sizeof(int[20])), issues[0]);
   delete[] pointer;
@@ -69,9 +69,9 @@ TEST_F(LeakDetectionTests,
   double *pointer = new double[17];
   std::string *str = new std::string();
   void *xyz = new char *;
-  memspy::stop_spying();
-  ASSERT_FALSE(memspy::verify());
-  auto issues = memspy::issues();
+  memspy::StopSpying();
+  ASSERT_FALSE(memspy::Verify());
+  auto issues = memspy::Issues();
   ASSERT_EQ(3, issues.size());
   ASSERT_EQ(expected_message(pointer, sizeof(double[17])), issues[0]);
   ASSERT_EQ(expected_message(str, sizeof(std::string)), issues[1]);
@@ -84,9 +84,9 @@ TEST_F(LeakDetectionTests,
 TEST_F(LeakDetectionTests,
        VerifictaionAfterSingleAllocationBySmartPointerBeforeExitingScopeExpectedVerificationFailture) {
   std::unique_ptr<double> d = std::make_unique<double>(90.78);
-  memspy::stop_spying();
-  ASSERT_FALSE(memspy::verify());
-  auto issues = memspy::issues();
+  memspy::StopSpying();
+  ASSERT_FALSE(memspy::Verify());
+  auto issues = memspy::Issues();
   ASSERT_EQ(1, issues.size());
   ASSERT_EQ(expected_message(&(*d), sizeof(double)), issues[0]);
 }
@@ -94,9 +94,9 @@ TEST_F(LeakDetectionTests,
 TEST_F(LeakDetectionTests,
        VerifictaionAfterSingleAllocationBySmartPointerAfterExitingScopeExpectedVerificationSuccess) {
   alloc_unique_value(89.9);
-  memspy::stop_spying();
-  ASSERT_TRUE(memspy::verify());
-  auto issues = memspy::issues();
+  memspy::StopSpying();
+  ASSERT_TRUE(memspy::Verify());
+  auto issues = memspy::Issues();
   ASSERT_EQ(0, issues.size());
 }
 

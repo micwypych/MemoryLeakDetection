@@ -15,15 +15,15 @@
 class LeakDetectionTest : public virtual ::testing::Test {
  public:
   LeakDetectionTest() {
-    memspy::start_spying();
+    memspy::StartSpying();
   }
 
   virtual ~LeakDetectionTest() {
-    memspy::stop_spying();
-    auto accepted = memspy::verify();
+    memspy::StopSpying();
+    auto accepted = memspy::Verify();
     std::string message;
     if (not accepted) {
-      auto issues = memspy::issues();
+      auto issues = memspy::Issues();
       std::stringstream ss;
       ss << "There were discoverd " << issues.size() << " number of memory leakage: " << std::endl;
       for (const auto &str : issues) {
@@ -31,7 +31,7 @@ class LeakDetectionTest : public virtual ::testing::Test {
       }
       message = ss.str();
     }
-    memspy::clear_state();
+    memspy::ClearState();
     EXPECT_TRUE(accepted) << message;
   }
 };
