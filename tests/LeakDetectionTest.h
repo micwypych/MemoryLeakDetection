@@ -25,9 +25,9 @@ class LeakDetectionTest : public virtual ::testing::Test {
     if (not accepted) {
       auto issues = memspy::issues();
       std::stringstream ss;
-      ss<<"There were discoverd "<<issues.size()<<" number of memory leakage: "<<std::endl;
+      ss << "There were discoverd " << issues.size() << " number of memory leakage: " << std::endl;
       for (const auto &str : issues) {
-        ss<<str<<std::endl;
+        ss << str << std::endl;
       }
       message = ss.str();
     }

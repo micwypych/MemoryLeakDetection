@@ -13,9 +13,9 @@ class LibC {
   virtual void *malloc(size_t nbytes) =0;
 //  virtual void *realloc(void *aptr, size_t nbytes ) =0;
 //  virtual void *reallocf(void *aptr, size_t nbytes ) =0;
-  virtual void free(void *aptr ) =0;
+  virtual void free(void *aptr) =0;
 //
-//  virtual void *memalign(size_t align, size_t nbytes ) =0;
+//  virtual void *memalign(size_t align, size_t nbytes ) =0;rrc
 //
 //  virtual size_t malloc_usable_size(void *aptr) =0;
 //

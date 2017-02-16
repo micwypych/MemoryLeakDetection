@@ -16,10 +16,7 @@ std::vector<std::string> issues();
 bool verify();
 }
 
-
-
 void *malloc(size_t size);
 void free(void *aptr);
-
 
 #endif //MEMORYLEAKDETECTION_MEMORYLEAKDETECTOR_H

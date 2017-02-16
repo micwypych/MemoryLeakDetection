@@ -8,7 +8,7 @@
 #include "LibC.h"
 class GNULibCDelegator : public virtual LibC {
  public:
-  typedef void * (*libc_malloc_t)(size_t);
+  typedef void *(*libc_malloc_t)(size_t);
   typedef void (*libc_free_t)(void *);
 
   bool initialize() override;

@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <MemoryLeakDetector.h>
-#include <MemorySpy.h>
 #include "LeakDetectionTest.h"
 
 class LeakDetectionWithLeakDetectionFixture : public virtual LeakDetectionTest {
@@ -23,6 +22,6 @@ class LeakDetectionWithLeakDetectionFixture : public virtual LeakDetectionTest {
   }
 };
 
-TEST_F(LeakDetectionWithLeakDetectionFixture,Create) {
+TEST_F(LeakDetectionWithLeakDetectionFixture, Create) {
   ASSERT_TRUE(true);
 }
